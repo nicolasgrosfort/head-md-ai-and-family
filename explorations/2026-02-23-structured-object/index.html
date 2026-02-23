@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Is Hat?</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        background: #f0f4f8;
+      }
+      h1 {
+        margin-bottom: 1.5rem;
+      }
+      button {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        background: #4f6ef7;
+        color: white;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      #result {
+        margin-top: 2rem;
+        max-width: 500px;
+        font-size: 1.1rem;
+        text-align: center;
+        min-height: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Is Hat?</h1>
+    <button id="btn" onclick="describeImage()">Is Hat ?</button>
+    <p id="result"></p>
+
+    <script>
+      async function describeImage() {
+        const btn = document.getElementById("btn");
+        const result = document.getElementById("result");
+
+        btn.disabled = true;
+        result.textContent = "Analyse en cours...";
+
+        const descResponse = await fetch("http://localhost:3001/is-hat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64 }),
+        });
+        const data = await descResponse.json();
+
+        result.textContent = data.isHat
+          ? "C'est un chapeau!"
+          : "Ce n'est pas un chapeau.";
+        btn.disabled = false;
+      }
+    </script>
+  </body>
+</html>
