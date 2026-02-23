@@ -53,10 +53,8 @@
         btn.disabled = true;
         result.textContent = "Analyse en cours...";
 
-        const descResponse = await fetch("http://localhost:3001/is-hat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageBase64 }),
+        const descResponse = await fetch("http://localhost:3100/is-hat", {
+          method: "GET",
         });
         const data = await descResponse.json();
 
