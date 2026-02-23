@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Haiku IA</title>
+    <title>Image describer</title>
     <style>
       body {
         font-family: sans-serif;
@@ -41,8 +41,9 @@
     </style>
   </head>
   <body>
-    <h1>🤖 Haiku du jour</h1>
-    <button id="btn" onclick="fetchJoke()">Génère un Haiku</button>
+    <h1>Image du jour</h1>
+    <img src="/images/image.jpg" alt="Mon image" width="400" />
+    <button id="btn" onclick="fetchJoke()">Décrire l'image</button>
     <p id="result"></p>
 
     <script>
@@ -52,9 +53,9 @@
         btn.disabled = true;
         result.textContent = "Chargement...";
 
-        const response = await fetch("http://localhost:3000/joke");
+        const response = await fetch("http://localhost:3000/describe");
         const data = await response.json();
-        result.textContent = data.joke;
+        result.textContent = data.description;
         btn.disabled = false;
       }
     </script>
