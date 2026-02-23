@@ -42,19 +42,31 @@
   </head>
   <body>
     <h1>Image du jour</h1>
-    <img src="/images/image.jpg" alt="Mon image" width="400" />
-    <button id="btn" onclick="fetchJoke()">Décrire l'image</button>
+    <img id="image" alt="Image aléatoire" width="400" />
+    <button id="btn" onclick="describeImage()">Décrire l'image</button>
     <p id="result"></p>
 
     <script>
-      async function fetchJoke() {
+      async function describeImage() {
         const btn = document.getElementById("btn");
         const result = document.getElementById("result");
-        btn.disabled = true;
-        result.textContent = "Chargement...";
+        const img = document.getElementById("image");
 
-        const response = await fetch("http://localhost:3000/describe");
-        const data = await response.json();
+        btn.disabled = true;
+        result.textContent = "Génération de l'image...";
+
+        const genResponse = await fetch("http://localhost:3000/generate-image");
+        const { imageBase64 } = await genResponse.json();
+        img.src = `data:image/png;base64,${imageBase64}`;
+
+        result.textContent = "Analyse en cours...";
+
+        const descResponse = await fetch("http://localhost:3000/describe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageBase64 }),
+        });
+        const data = await descResponse.json();
         result.textContent = data.description;
         btn.disabled = false;
       }
