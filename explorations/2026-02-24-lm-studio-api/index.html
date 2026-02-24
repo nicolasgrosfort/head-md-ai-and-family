@@ -206,6 +206,14 @@
         color: #6b7280;
         font-style: italic;
       }
+      #timer {
+        display: inline-block;
+        margin-left: 0.5rem;
+        font-variant-numeric: tabular-nums;
+        color: #6366f1;
+        font-style: normal;
+        font-weight: 600;
+      }
       #result-stats {
         display: flex;
         gap: 1rem;
@@ -305,12 +313,33 @@
 
     <div id="result-card">
       <span class="result-label">Réponse</span>
-      <div id="result-text"></div>
+      <div id="result-text"><span id="timer"></span></div>
       <div id="result-stats"></div>
     </div>
 
     <script>
       let imageDataUrl = null;
+      let timerInterval = null;
+      let timerStart = null;
+
+      function startTimer() {
+        timerStart = performance.now();
+        const timerEl = document.getElementById("timer");
+        timerEl.textContent = "0.0 s";
+        timerInterval = setInterval(() => {
+          const elapsed = (performance.now() - timerStart) / 1000;
+          timerEl.textContent = elapsed.toFixed(1) + " s";
+        }, 100);
+      }
+
+      function stopTimer() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        const elapsed =
+          timerStart != null ? (performance.now() - timerStart) / 1000 : null;
+        document.getElementById("timer").textContent = "";
+        return elapsed;
+      }
 
       // --- Drop zone ---
       const dropZone = document.getElementById("drop-zone");
@@ -385,7 +414,8 @@
         btn.disabled = true;
         resultCard.style.display = "flex";
         resultText.className = "loading";
-        resultText.textContent = "Génération en cours…";
+        resultText.innerHTML = "Génération en cours…<span id='timer'></span>";
+        startTimer();
 
         try {
           const response = await fetch(apiUrl, {
@@ -399,6 +429,7 @@
             throw new Error(`HTTP ${response.status}: ${err}`);
           }
 
+          const elapsed = stopTimer();
           const data = await response.json();
 
           // LM Studio response format
@@ -415,6 +446,10 @@
           const statsEl = document.getElementById("result-stats");
           if (stats) {
             statsEl.innerHTML = [
+              {
+                label: "Durée totale",
+                value: elapsed != null ? elapsed.toFixed(2) + " s" : "—",
+              },
               { label: "Tokens", value: stats.total_output_tokens },
               {
                 label: "Temps premier token",
@@ -441,6 +476,7 @@
             statsEl.style.display = "none";
           }
         } catch (err) {
+          stopTimer();
           resultCard.style.display = "none";
           showError(err.message);
         } finally {
