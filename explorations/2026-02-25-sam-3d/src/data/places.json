@@ -29,6 +29,16 @@
       "date": "2026-02-25",
       "position": [0, 0, 1],
       "size": 0.015
+    },
+    {
+      "name": "Cottage",
+      "text": null,
+      "location": "Genève",
+      "model": "/3d/cottage.ply",
+      "audio": "/audio/cottage.wav",
+      "date": "2026-02-26",
+      "position": [0, 0, 1],
+      "size": 0.01
     }
   ]
 }
