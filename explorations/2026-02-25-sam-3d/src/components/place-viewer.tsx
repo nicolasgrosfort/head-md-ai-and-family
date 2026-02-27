@@ -16,9 +16,9 @@ export default function PlaceViewer({ place, isSoundOn }: PlaceViewerProps) {
   return (
     <>
       <OrbitControls />
-      <group position={place.position}>
+      <group position={place.position} rotateX={90}>
         <points geometry={geometry}>
-          <pointsMaterial size={place.size} vertexColors />
+          <pointsMaterial size={place.size} color={"white"} />
         </points>
         {place.audio && isSoundOn && (
           <PositionalAudio

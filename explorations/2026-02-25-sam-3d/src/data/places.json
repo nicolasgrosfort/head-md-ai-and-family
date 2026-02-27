@@ -31,14 +31,14 @@
       "size": 0.015
     },
     {
-      "name": "Cottage",
+      "name": "Little House",
       "text": null,
       "location": "Genève",
-      "model": "/3d/cottage.ply",
+      "model": "/3d/little-house.ply",
       "audio": "/audio/cottage.wav",
       "date": "2026-02-26",
-      "position": [0, 0, 1],
-      "size": 0.01
+      "position": [0, 0, -1],
+      "size": 0.005
     }
   ]
 }
