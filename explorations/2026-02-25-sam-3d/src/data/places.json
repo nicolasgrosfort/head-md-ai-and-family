@@ -49,6 +49,16 @@
       "date": "2026-02-26",
       "position": [0, 0, -1],
       "size": 0.005
+    },
+    {
+      "name": "Lunettes",
+      "text": null,
+      "location": "Genève",
+      "model": "/3d/lunettes.ply",
+      "audio": null,
+      "date": "2026-02-26",
+      "position": [0, 0, -1],
+      "size": 0.005
     }
   ]
 }
