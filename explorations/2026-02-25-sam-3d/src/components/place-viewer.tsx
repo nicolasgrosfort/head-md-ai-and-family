@@ -31,7 +31,7 @@ export default function PlaceViewer({ place, isSoundOn }: PlaceViewerProps) {
         rotation={[Math.PI, 0, 0]}
       >
         <points geometry={geometry}>
-          <pointsMaterial size={place.size} color={"white"} />
+          <pointsMaterial size={place.size} vertexColors />
         </points>
         {place.audio && isSoundOn && (
           <PositionalAudio
