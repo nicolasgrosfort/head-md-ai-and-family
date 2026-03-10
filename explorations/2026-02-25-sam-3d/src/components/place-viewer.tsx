@@ -28,7 +28,7 @@ export default function PlaceViewer({ place, isSoundOn }: PlaceViewerProps) {
       <group
         ref={groupRef}
         position={place.position}
-        rotation={[Math.PI, 0, 0]}
+        rotation={[Math.PI, Math.PI, 0]}
       >
         <points geometry={geometry}>
           <pointsMaterial size={place.size} vertexColors />
