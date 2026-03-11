@@ -1,38 +1,28 @@
 import tailwindcss from "@tailwindcss/vite";
-import basicSsl from "@vitejs/plugin-basic-ssl";
+import fs from "fs";
 import os from "os";
 import { defineConfig } from "vite";
 
-const hostname = os.hostname();
+const ip = Object.values(os.networkInterfaces())
+  .flat()
+  .find((iface) => iface?.family === "IPv4" && !iface.internal)?.address;
 
 export default defineConfig({
   server: {
     host: true,
     port: 5173,
-    allowedHosts: [`http://${hostname}:5173`],
+    allowedHosts: [`http://${ip}:5173`],
+    https: {
+      key: fs.readFileSync("./localhost+3-key.pem"),
+      cert: fs.readFileSync("./localhost+3.pem"),
+    },
     proxy: {
       "/api": {
-        target: `http://${hostname}:3000`,
+        target: `http://${ip}:3000`,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
   },
-  plugins: [
-    tailwindcss(),
-    basicSsl(),
-    {
-      name: "print-hostname",
-      configureServer(server) {
-        server.httpServer?.once("listening", () => {
-          const port = server.config.server.port;
-          console.log("");
-          console.log("Dev server available at:");
-          console.log(`Local:    http://localhost:${port}`);
-          console.log(`Network:  http://${hostname}:${port}`);
-          console.log("");
-        });
-      },
-    },
-  ],
+  plugins: [tailwindcss()],
 });

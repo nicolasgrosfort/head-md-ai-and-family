@@ -3,9 +3,12 @@ import cors from "cors";
 import express from "express";
 import os from "os";
 
-const hostname = os.hostname();
 const app = express();
 const PORT = 3000;
+
+const ip = Object.values(os.networkInterfaces())
+  .flat()
+  .find((iface) => iface?.family === "IPv4" && !iface.internal)?.address;
 
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
@@ -47,5 +50,6 @@ app.post("/test", async (req, res) => {
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running at:`);
-  console.log(`http://${hostname}.local:${PORT}`);
+  console.log(`http://localhost:${PORT}`);
+  console.log(`http://${ip}:${PORT}`);
 });
