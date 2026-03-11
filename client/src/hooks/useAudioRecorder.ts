@@ -44,7 +44,7 @@ export function useAudioRecorder(maxDuration = 240): AudioRecorderHook {
 
           recorder.onstop = () => {
             const blob = new Blob(audioChunksRef.current, {
-              type: "audio/wav",
+              type: recorder.mimeType,
             });
             setAudioBlob(blob);
             audioChunksRef.current = [];
