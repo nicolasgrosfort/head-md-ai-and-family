@@ -1,14 +1,16 @@
+import { useAtom } from "jotai";
+import { useEffect } from "react";
 import { useAudioRecorder } from "../hooks/useAudioRecorder";
+import { audioBlobAtom } from "../store/atoms";
 
 export const PushToTalk = () => {
-  const {
-    isRecording,
-    audioBlob,
-    startRecording,
-    stopRecording,
-    recordingTime,
-    formatTime,
-  } = useAudioRecorder(240);
+  const [, setAudioBlob] = useAtom(audioBlobAtom);
+  const { isRecording, audioBlob, startRecording, stopRecording } =
+    useAudioRecorder(240);
+
+  useEffect(() => {
+    setAudioBlob(audioBlob);
+  }, [audioBlob, setAudioBlob]);
 
   const handleMouseDown = () => {
     startRecording();
@@ -27,14 +29,6 @@ export const PushToTalk = () => {
       >
         {isRecording ? "Recording..." : "Push to Talk"}
       </button>
-
-      {audioBlob && (
-        <div>
-          <p>Preview recording:</p>
-          <audio controls src={URL.createObjectURL(audioBlob)} />
-          <span>{formatTime(recordingTime)}</span>
-        </div>
-      )}
     </>
   );
 };
