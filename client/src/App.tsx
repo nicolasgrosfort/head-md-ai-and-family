@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { PushToTalk } from "./components/push-to-talk.tsx";
 import { audio } from "./data/audio.ts";
 
 function App() {
@@ -18,7 +19,9 @@ function App() {
 
   return (
     <>
-      <div></div>
+      <div>
+        <PushToTalk />
+      </div>
       <div>
         <button onClick={handleClick}>Appeler /test</button>
         {response && <pre>{response}</pre>}
