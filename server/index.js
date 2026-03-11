@@ -23,8 +23,33 @@ const google = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-app.post("/speech-to-text", (req, res) => {
-  res.json({ status: "ok" });
+app.post("/speech-to-text", async (req, res) => {
+  try {
+    const audioBase64 = `data:audio/wav;base64,${req.body.audio}`;
+
+    const result = await fal.subscribe(
+      "fal-ai/elevenlabs/speech-to-text/scribe-v2",
+      {
+        input: {
+          audio_url: audioBase64,
+        },
+        logs: true,
+        onQueueUpdate: (update) => {
+          if (update.status === "IN_PROGRESS") {
+            update.logs.map((log) => log.message).forEach(console.log);
+          }
+        },
+      },
+    );
+
+    res.status(200).json({
+      status: "ok",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Speech to text failed", error);
+    res.status(500).json({ error: "Speech to text failed", data: error });
+  }
 });
 
 app.post("/text-to-story", (req, res) => {
@@ -107,9 +132,9 @@ app.post("/image-to-model", async (req, res) => {
   try {
     const { image } = req.body;
 
-    const result = await fal.subscribe("fal-ai/trellis", {
+    const result = await fal.subscribe("fal-ai/hunyuan3d-v21", {
       input: {
-        image_url: image,
+        input_image_url: image,
       },
       logs: true,
       onQueueUpdate: (update) => {
@@ -118,9 +143,13 @@ app.post("/image-to-model", async (req, res) => {
         }
       },
     });
-    console.log(result);
 
-    res.status(200).json({ status: "ok", data: result });
+    res.status(200).json({
+      status: "ok",
+      data: {
+        glb: result.data.model_glb.url,
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Image to model failed", data: err });

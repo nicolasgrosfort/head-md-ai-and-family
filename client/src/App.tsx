@@ -1,7 +1,11 @@
+import { OrbitControls } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
 import { useAtom } from "jotai";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { Model } from "./components/model.tsx";
 import { PushToTalk } from "./components/push-to-talk.tsx";
 import { audioBlobAtom } from "./store/atoms.ts";
+import { blobToBase64 } from "./utils/helpers.ts";
 // import { blobToBase64 } from "./utils/helpers.ts";
 
 function App() {
@@ -14,72 +18,72 @@ function App() {
   const [status, setStatus] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
 
-  // const handleClick = async () => {
-  //   setStatus("processing");
+  const handleClick = async () => {
+    setStatus("processing");
 
-  //   if (!audioBlob) return;
+    if (!audioBlob) return;
 
-  //   const audioBase64 = await blobToBase64(audioBlob);
+    const audioBase64 = await blobToBase64(audioBlob);
 
-  //   const res = await fetch("/api/test", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({ audio: audioBase64 }),
-  //   });
-  //   const data = await res.json();
-  //   setResponse(JSON.stringify(data, null, 2));
-  //   setStatus("ready");
-  // };
+    const res = await fetch("/api/speech-to-text", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ audio: audioBase64 }),
+    });
+    const data = await res.json();
+    setResponse(JSON.stringify(data, null, 2));
+    setStatus("ready");
+  };
 
   const generate = async () => {
     try {
       setStatus("Object to image processing...");
 
-      const resObjectToImage = await fetch("/api/object-to-image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt:
-            "Un ours en peluche, un peu sale, raccommodé sur le nez et avec une oreille cassée. Il est bleu et rouge, et il lui manque un œil. Il est en position assise.",
-        }),
-      });
+      // const resObjectToImage = await fetch("/api/object-to-image", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     prompt:
+      //       "Un ours en peluche, un peu sale, raccommodé sur le nez et avec une oreille cassée. Il est bleu et rouge, et il lui manque un œil. Il est en position assise.",
+      //   }),
+      // });
 
-      if (!resObjectToImage.ok)
-        throw new Error(`object-to-image failed: ${resObjectToImage.status}`);
+      // if (!resObjectToImage.ok)
+      //   throw new Error(`object-to-image failed: ${resObjectToImage.status}`);
 
-      const {
-        data: { mimeType, image },
-      } = await resObjectToImage.json();
+      // const {
+      //   data: { mimeType, image },
+      // } = await resObjectToImage.json();
 
-      setImageBase64(`data:${mimeType};base64,${image}`);
-      setStatus("Background image removing...");
+      // setImageBase64(`data:${mimeType};base64,${image}`);
+      // setStatus("Background image removing...");
 
-      const resRemoveBackgroundImage = await fetch(
-        "/api/remove-background-image",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            image: `data:${mimeType};base64,${image}`,
-          }),
-        },
-      );
+      // const resRemoveBackgroundImage = await fetch(
+      //   "/api/remove-background-image",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       image: `data:${mimeType};base64,${image}`,
+      //     }),
+      //   },
+      // );
 
-      if (!resRemoveBackgroundImage.ok)
-        throw new Error(
-          `remove-background-image failed: ${resRemoveBackgroundImage.status}`,
-        );
+      // if (!resRemoveBackgroundImage.ok)
+      //   throw new Error(
+      //     `remove-background-image failed: ${resRemoveBackgroundImage.status}`,
+      //   );
 
-      const {
-        data: { imageUrl },
-      } = await resRemoveBackgroundImage.json();
-      setImageBase64(imageUrl);
+      // const {
+      //   data: { imageUrl },
+      // } = await resRemoveBackgroundImage.json();
+      // setImageBase64(imageUrl);
 
       setStatus("Image to model processing...");
 
@@ -89,16 +93,14 @@ function App() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          image: imageUrl,
+          image:
+            "https://v3b.fal.media/files/b/0a91c9e6/J3UNyFpLcai8Igpif6DRt.png",
         }),
       });
 
-      if (!resImageToModel.ok)
-        throw new Error(`image-to-model failed: ${resImageToModel.status}`);
+      const { data } = await resImageToModel.json();
 
-      const dataImageToModel = await resImageToModel.json();
-      console.log(dataImageToModel);
-
+      setModelUrl(data.glb);
       setStatus("ready");
     } catch (err) {
       console.error(err);
@@ -132,7 +134,18 @@ function App() {
         </div>
       )}
 
-      {/* {audioBlob && (
+      <Canvas
+        style={{ height: "500px" }}
+        camera={{ position: [0, 0, 2], fov: 50 }}
+      >
+        <Suspense fallback={null}>
+          <OrbitControls />
+          <directionalLight position={[5, 5, 5]} intensity={20} />
+          {modelUrl && <Model url={modelUrl} />}
+        </Suspense>
+      </Canvas>
+
+      {audioBlob && (
         <>
           <button
             onClick={handleClick}
@@ -146,7 +159,7 @@ function App() {
             <audio controls src={URL.createObjectURL(audioBlob)} />
           </div>
         </>
-      )} */}
+      )}
     </main>
   );
 }
