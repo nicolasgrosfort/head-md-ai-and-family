@@ -1,3 +1,4 @@
+import tailwindcss from "@tailwindcss/vite";
 import os from "os";
 import { defineConfig } from "vite";
 
@@ -10,6 +11,7 @@ export default defineConfig({
     allowedHosts: ["macbook-pro-de-nicolas.local"],
   },
   plugins: [
+    tailwindcss(),
     {
       name: "print-hostname",
       configureServer(server) {
