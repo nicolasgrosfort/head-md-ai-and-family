@@ -156,7 +156,13 @@ function App() {
             <directionalLight
               position={[0, 5, -5]} // z- derrière, y+ haut
               intensity={2}
-              color="#00ff00"
+              color="#ffff00"
+            />
+
+            <directionalLight
+              position={[0, -5, 0]} // y- dessous
+              intensity={1}
+              color="#ff00ff"
             />
             {modelUrl && <Model url={modelUrl} />}
           </Suspense>

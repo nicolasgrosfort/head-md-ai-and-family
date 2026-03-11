@@ -53,15 +53,39 @@ app.post("/speech-to-text", async (req, res) => {
 });
 
 app.post("/text-to-story", (req, res) => {
-  res.json({ status: "ok" });
+  try {
+    res.json({ status: "ok" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Text to story failed", data: err });
+  }
 });
 
 app.post("/story-to-title", (req, res) => {
-  res.json({ status: "ok" });
+  try {
+    res.json({ status: "ok" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Story to title failed", data: err });
+  }
 });
 
 app.post("/text-to-object", (req, res) => {
-  res.json({ status: "ok" });
+  try {
+    res.json({ status: "ok" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Text to object failed", data: err });
+  }
+});
+
+app.post("/object-to-title", (req, res) => {
+  try {
+    res.json({ status: "ok" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Object to title failed", data: err });
+  }
 });
 
 app.post("/object-to-image", async (req, res) => {
@@ -157,37 +181,6 @@ app.post("/image-to-model", async (req, res) => {
     res.status(500).json({ error: "Image to model failed", data: err });
   }
 });
-
-// app.post("/test", async (req, res) => {
-//   try {
-//     const { audio } = req.body;
-//     const audioBase64url = `data:audio/wav;base64,${audio}`;
-
-//     const result = await fal.subscribe(
-//       "fal-ai/elevenlabs/speech-to-text/scribe-v2",
-//       {
-//         input: {
-//           audio_url: audioBase64url,
-//         },
-//         logs: true,
-//         onQueueUpdate: (update) => {
-//           if (update.status === "IN_PROGRESS") {
-//             update.logs.map((log) => log.message).forEach(console.log);
-//           }
-//         },
-//       },
-//     );
-
-//     res.json({
-//       status: "ok",
-//       length: audio.length,
-//       data: result.data,
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "transcription failed" });
-//   }
-// });
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running at:`);
