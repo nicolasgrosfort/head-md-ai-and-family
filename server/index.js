@@ -132,9 +132,11 @@ app.post("/image-to-model", async (req, res) => {
   try {
     const { image } = req.body;
 
-    const result = await fal.subscribe("fal-ai/hunyuan3d-v21", {
+    const result = await fal.subscribe("fal-ai/sam-3/3d-objects", {
       input: {
-        input_image_url: image,
+        image_url: image,
+        mask_urls: [image],
+        prompt: "a teddy bear",
       },
       logs: true,
       onQueueUpdate: (update) => {
@@ -143,12 +145,12 @@ app.post("/image-to-model", async (req, res) => {
         }
       },
     });
+    console.log(result.data);
+    console.log(result.requestId);
 
     res.status(200).json({
       status: "ok",
-      data: {
-        glb: result.data.model_glb.url,
-      },
+      data: result.data,
     });
   } catch (err) {
     console.error(err);

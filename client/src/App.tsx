@@ -1,4 +1,3 @@
-import { OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useAtom } from "jotai";
 import { Suspense, useState } from "react";
@@ -13,7 +12,7 @@ function App() {
   const [googleResponse, setGoogleResponse] = useState<string | null>(null);
   const [response, setResponse] = useState<string | null>(null);
   const [modelUrl, setModelUrl] = useState<string | null>(
-    "https://v3b.fal.media/files/b/0a91c93e/O7Q5FCsMFTxWlbhoho-KV_model.glb",
+    "https://v3b.fal.media/files/b/0a91cc0d/MwwnogFgl-Ol6d7xuYIi3_combined_scene.glb",
   );
   const [status, setStatus] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
@@ -41,49 +40,49 @@ function App() {
     try {
       setStatus("Object to image processing...");
 
-      // const resObjectToImage = await fetch("/api/object-to-image", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     prompt:
-      //       "Un ours en peluche, un peu sale, raccommodé sur le nez et avec une oreille cassée. Il est bleu et rouge, et il lui manque un œil. Il est en position assise.",
-      //   }),
-      // });
+      const resObjectToImage = await fetch("/api/object-to-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt:
+            "Un ours en peluche, un peu sale, raccommodé sur le nez et avec une oreille cassée. Il est bleu et rouge, et il lui manque un œil. Il est en position assise.",
+        }),
+      });
 
-      // if (!resObjectToImage.ok)
-      //   throw new Error(`object-to-image failed: ${resObjectToImage.status}`);
+      if (!resObjectToImage.ok)
+        throw new Error(`object-to-image failed: ${resObjectToImage.status}`);
 
-      // const {
-      //   data: { mimeType, image },
-      // } = await resObjectToImage.json();
+      const {
+        data: { mimeType, image },
+      } = await resObjectToImage.json();
 
-      // setImageBase64(`data:${mimeType};base64,${image}`);
-      // setStatus("Background image removing...");
+      setImageBase64(`data:${mimeType};base64,${image}`);
+      setStatus("Background image removing...");
 
-      // const resRemoveBackgroundImage = await fetch(
-      //   "/api/remove-background-image",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       image: `data:${mimeType};base64,${image}`,
-      //     }),
-      //   },
-      // );
+      const resRemoveBackgroundImage = await fetch(
+        "/api/remove-background-image",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            image: `data:${mimeType};base64,${image}`,
+          }),
+        },
+      );
 
-      // if (!resRemoveBackgroundImage.ok)
-      //   throw new Error(
-      //     `remove-background-image failed: ${resRemoveBackgroundImage.status}`,
-      //   );
+      if (!resRemoveBackgroundImage.ok)
+        throw new Error(
+          `remove-background-image failed: ${resRemoveBackgroundImage.status}`,
+        );
 
-      // const {
-      //   data: { imageUrl },
-      // } = await resRemoveBackgroundImage.json();
-      // setImageBase64(imageUrl);
+      const {
+        data: { imageUrl },
+      } = await resRemoveBackgroundImage.json();
+      setImageBase64(imageUrl);
 
       setStatus("Image to model processing...");
 
@@ -93,14 +92,13 @@ function App() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          image:
-            "https://v3b.fal.media/files/b/0a91c9e6/J3UNyFpLcai8Igpif6DRt.png",
+          image: imageUrl,
         }),
       });
 
       const { data } = await resImageToModel.json();
 
-      setModelUrl(data.glb);
+      setModelUrl(data.model_glb.url);
       setStatus("ready");
     } catch (err) {
       console.error(err);
@@ -134,16 +132,36 @@ function App() {
         </div>
       )}
 
-      <Canvas
-        style={{ height: "500px" }}
-        camera={{ position: [0, 0, 2], fov: 50 }}
-      >
-        <Suspense fallback={null}>
-          <OrbitControls />
-          <directionalLight position={[5, 5, 5]} intensity={20} />
-          {modelUrl && <Model url={modelUrl} />}
-        </Suspense>
-      </Canvas>
+      <div className="fixed inset-0 -z-10">
+        <Canvas camera={{ position: [0, 0, 2], fov: 50 }}>
+          <Suspense fallback={null}>
+            <directionalLight
+              position={[0, 5, 5]} // devant
+              intensity={4}
+              color="#ffffff"
+            />
+
+            <directionalLight
+              position={[5, 5, 0]} // x+ y+ z=0 -> haut à droite
+              intensity={2}
+              color="#ff00ff"
+            />
+
+            <directionalLight
+              position={[-5, 5, 0]} // x- y+ -> haut à gauche
+              intensity={2}
+              color="#00ffff"
+            />
+
+            <directionalLight
+              position={[0, 5, -5]} // z- derrière, y+ haut
+              intensity={2}
+              color="#00ff00"
+            />
+            {modelUrl && <Model url={modelUrl} />}
+          </Suspense>
+        </Canvas>
+      </div>
 
       {audioBlob && (
         <>
