@@ -1,4 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
+import basicSsl from "@vitejs/plugin-basic-ssl";
 import os from "os";
 import { defineConfig } from "vite";
 
@@ -12,6 +13,7 @@ export default defineConfig({
   },
   plugins: [
     tailwindcss(),
+    basicSsl(),
     {
       name: "print-hostname",
       configureServer(server) {
