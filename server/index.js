@@ -1,3 +1,4 @@
+import { fal } from "@fal-ai/client";
 import cors from "cors";
 import express from "express";
 import os from "os";
@@ -6,31 +7,37 @@ const hostname = os.hostname();
 const app = express();
 const PORT = 3000;
 
-//   await fal.config({
-//     apiKey:
-//       "ed3171f3-6338-4853-a827-49b60822a802:cbba78d2e33b5670fb722a76f55a5ce2",
-//   });
-
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
+
+fal.config({
+  credentials: process.env.FAL_API_KEY,
+});
 
 app.post("/test", async (req, res) => {
   try {
     const { audio } = req.body;
+    const audioBase64url = `data:audio/wav;base64,${audio}`;
 
-    console.log("audio received length:", audio.length);
-
-    // const result = await fal.subscribe("fal-ai/speech-to-text", {
-    //   input: {
-    //     audio_url: audio,
-    //   },
-    //   logs: true,
-    // });
+    const result = await fal.subscribe(
+      "fal-ai/elevenlabs/speech-to-text/scribe-v2",
+      {
+        input: {
+          audio_url: audioBase64url,
+        },
+        logs: true,
+        onQueueUpdate: (update) => {
+          if (update.status === "IN_PROGRESS") {
+            update.logs.map((log) => log.message).forEach(console.log);
+          }
+        },
+      },
+    );
 
     res.json({
       status: "ok",
       length: audio.length,
-      //   text: result.data.output.
+      data: result.data,
     });
   } catch (err) {
     console.error(err);

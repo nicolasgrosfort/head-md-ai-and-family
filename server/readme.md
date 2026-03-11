@@ -2,7 +2,9 @@
 
 ## Setup FAL AI Api Key
 
+Store your FAL AI API key in an environment variable named `FAL_KEY`:
+
 ```bash
-export FAL_KEY="my-api-key"
+FAL_KEY="my-api-key"
 ```
 
