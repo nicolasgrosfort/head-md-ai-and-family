@@ -25,6 +25,8 @@ export const PushToTalk = () => {
       <button
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
         className="w-40 h-40 rounded-full bg-red-700 text-white font-bold font-mono cursor-pointer active:bg-red-900"
       >
         {isRecording ? "Recording..." : "Push to Talk"}
