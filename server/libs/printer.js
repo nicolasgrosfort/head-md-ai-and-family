@@ -47,6 +47,7 @@ async function resizeForPrinter(imagePath) {
 
   await sharp(source)
     .resize({ width: 384, withoutEnlargement: true })
+    .flatten({ background: { r: 255, g: 255, b: 255 } })
     .png()
     .toFile(tmpPath);
   return {
