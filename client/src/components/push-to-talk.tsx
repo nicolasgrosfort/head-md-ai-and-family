@@ -1,36 +1,59 @@
-import { useAtom } from "jotai";
 import { useEffect } from "react";
+import { useWebHaptics } from "web-haptics/react";
 import { useAudioRecorder } from "../hooks/useAudioRecorder";
-import { audioBlobAtom } from "../store/atoms";
 
-export const PushToTalk = () => {
-  const [, setAudioBlob] = useAtom(audioBlobAtom);
-  const { isRecording, audioBlob, startRecording, stopRecording } =
+type PushToTalkProps = {
+  onAudioBlobChange?: (blob: Blob | null) => void;
+  onStartRecording?: () => void;
+  onStopRecording?: () => void;
+};
+
+export const PushToTalk = ({
+  onAudioBlobChange,
+  onStartRecording,
+  onStopRecording,
+}: PushToTalkProps) => {
+  const { isRecording, isReady, audioBlob, startRecording, stopRecording } =
     useAudioRecorder(240);
+  const { trigger } = useWebHaptics({ debug: true });
 
   useEffect(() => {
-    setAudioBlob(audioBlob);
-  }, [audioBlob, setAudioBlob]);
+    if (onAudioBlobChange) {
+      onAudioBlobChange(audioBlob);
+    }
+  }, [audioBlob, onAudioBlobChange]);
 
   const handleMouseDown = () => {
     startRecording();
+    trigger("selection");
+
+    if (onStartRecording) {
+      onStartRecording();
+    }
   };
 
   const handleMouseUp = () => {
     stopRecording();
+    trigger("selection");
+
+    if (onStopRecording) {
+      onStopRecording();
+    }
   };
 
   return (
-    <>
-      <button
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onTouchStart={handleMouseDown}
-        onTouchEnd={handleMouseUp}
-        className="w-40 h-40 rounded-full bg-red-700 text-white font-bold font-mono cursor-pointer active:bg-red-900"
-      >
-        {isRecording ? "Recording..." : "Push to Talk"}
-      </button>
-    </>
+    <button
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onTouchStart={handleMouseDown}
+      onTouchEnd={handleMouseUp}
+      className="w-full h-full bg-red-700 text-white font-bold font-mono cursor-pointer select-none active:scale-95"
+    >
+      {isReady
+        ? isRecording
+          ? "Recording..."
+          : "Push to Talk"
+        : "Initializing..."}
+    </button>
   );
 };
