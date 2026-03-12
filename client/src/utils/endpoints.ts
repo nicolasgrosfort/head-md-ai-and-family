@@ -192,7 +192,13 @@ export const storyToTitle = async (
 };
 
 type PrintLine =
-  | { type: "text"; content: string; bold?: boolean }
+  | {
+      type: "text";
+      content: string;
+      bold?: boolean;
+      big?: boolean;
+      center?: boolean;
+    }
   | { type: "image"; path: string }
   | { type: "newline"; count: number };
 export const printTsukumogami = async (

@@ -25,6 +25,8 @@ export const Print = () => {
                 type: "text",
                 content: storyTitle,
                 bold: true,
+                big: true,
+                center: true,
               },
               { type: "newline", count: 1 },
               {
