@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 export interface AudioRecorderHook {
+  isReady: boolean;
   isRecording: boolean;
   audioBlob: Blob | null;
   recordingTime: number;
@@ -11,6 +12,7 @@ export interface AudioRecorderHook {
 }
 
 export function useAudioRecorder(maxDuration = 240): AudioRecorderHook {
+  const [isReady, setIsReady] = useState<boolean>(false);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
@@ -35,6 +37,7 @@ export function useAudioRecorder(maxDuration = 240): AudioRecorderHook {
           setAudioStream(stream);
           const recorder = new MediaRecorder(stream);
           setMediaRecorder(recorder);
+          setIsReady(true);
 
           recorder.ondataavailable = (e: BlobEvent) => {
             if (e.data.size > 0) {
@@ -97,6 +100,7 @@ export function useAudioRecorder(maxDuration = 240): AudioRecorderHook {
   };
 
   return {
+    isReady,
     isRecording,
     audioBlob,
     recordingTime,
