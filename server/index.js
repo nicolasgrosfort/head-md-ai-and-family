@@ -191,7 +191,12 @@ app.post("/object-to-image", async (req, res) => {
       contents: object,
     });
 
-    const imageBase64 = `data:image/png;base64,${response.candidates[0].content.parts[0].inlineData.data}`;
+    const parts = response.candidates[0].content.parts;
+    const imagePart = parts.find((part) =>
+      part.inlineData?.mimeType?.startsWith("image/"),
+    );
+    const mimeType = imagePart.inlineData.mimeType;
+    const imageBase64 = `data:${mimeType};base64,${imagePart.inlineData.data}`;
 
     io.emit("image", imageBase64);
     res.status(200).json({
