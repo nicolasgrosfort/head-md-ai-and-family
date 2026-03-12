@@ -9,7 +9,6 @@ export const Print = () => {
   const mask = useAtomValue(maskAtom);
 
   const [isPrinting, setIsPrinting] = useState<boolean>(false);
-
   const readyToPrint = storyTitle && story && mask;
 
   return (

@@ -57,9 +57,9 @@ export const PushToTalk = ({
         ? status
         : isReady
           ? isRecording
-            ? "Recording..."
-            : "Push to Talk"
-          : "Initializing..."}
+            ? "RECORDING..."
+            : "HOLD TO TALK"
+          : "INIZIALIZING..."}
     </button>
   );
 };
