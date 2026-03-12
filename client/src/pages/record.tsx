@@ -127,7 +127,15 @@ export const Record = () => {
           socket.emit("ledOn", LED.YEELLOW);
         }}
       />
-      <PrintButton />
+      <PrintButton
+        onPrintEnd={() => {
+          setStatus(null);
+          const socket = getSocket();
+          socket.emit("ledOff", LED.RED);
+          socket.emit("ledOff", LED.YEELLOW);
+          socket.emit("ledOff", LED.GREEN);
+        }}
+      />
     </main>
   );
 };

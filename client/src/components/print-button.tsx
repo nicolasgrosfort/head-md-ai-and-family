@@ -1,4 +1,4 @@
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useState } from "react";
 import {
   maskAtom,
@@ -8,8 +8,9 @@ import {
 } from "../store/atoms";
 import { printTsukumogami } from "../utils/endpoints";
 
-export const PrintButton = () => {
+export const PrintButton = ({ onPrintEnd }: { onPrintEnd?: () => void }) => {
   const status = useAtomValue(statusAtom);
+  const setStatus = useSetAtom(statusAtom);
   const storyTitle = useAtomValue(storyTitleAtom);
   const story = useAtomValue(storyAtom);
   const mask = useAtomValue(maskAtom);
@@ -25,26 +26,34 @@ export const PrintButton = () => {
       onClick={async () => {
         if (!readyToPrint) return;
         setIsPrinting(true);
-        await printTsukumogami([
-          {
-            type: "image",
-            path: mask,
-          },
-          { type: "newline", count: 2 },
-          {
-            type: "text",
-            content: storyTitle,
-            bold: true,
-            big: true,
-            center: true,
-          },
-          { type: "newline", count: 1 },
-          {
-            type: "text",
-            content: story,
-          },
-        ]);
-        setIsPrinting(false);
+        setStatus("Printing");
+        try {
+          await printTsukumogami([
+            {
+              type: "image",
+              path: mask,
+            },
+            { type: "newline", count: 2 },
+            {
+              type: "text",
+              content: storyTitle,
+              bold: true,
+              big: true,
+              center: true,
+            },
+            { type: "newline", count: 1 },
+            {
+              type: "text",
+              content: story,
+            },
+          ]);
+        } catch (error) {
+          setStatus("Error");
+          throw error;
+        } finally {
+          setIsPrinting(false);
+          onPrintEnd?.();
+        }
       }}
     >
       {isPrinting ? "PRINTING..." : "PRINT"}
