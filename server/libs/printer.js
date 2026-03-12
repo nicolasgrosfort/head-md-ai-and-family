@@ -26,7 +26,18 @@ serialPort.on("error", (err) => console.error("Erreur port série:", err));
 
 async function resizeForPrinter(imagePath) {
   const tmpPath = join(tmpdir(), `printer-${Date.now()}.png`);
-  await sharp(imagePath)
+
+  let source;
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    const response = await fetch(imagePath);
+    if (!response.ok)
+      throw new Error(`Failed to fetch image: ${response.statusText}`);
+    source = Buffer.from(await response.arrayBuffer());
+  } else {
+    source = imagePath;
+  }
+
+  await sharp(source)
     .resize({ width: 384, withoutEnlargement: true })
     .png()
     .toFile(tmpPath);
