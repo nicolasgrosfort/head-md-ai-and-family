@@ -15,6 +15,7 @@
     "express": "^5.2.1",
     "nodemon": "^3.1.14",
     "serialport": "^13.0.0",
+    "sharp": "^0.34.5",
     "socket.io": "^4.8.3",
     "thermalprinter": "^0.3.10"
   }
