@@ -2,13 +2,6 @@
 
 ## Installation
 
-### Setup node version
-
-```bash
-sudo npm install -g n
-sudo n 24.14.0
-```
-
 ### Install certificates (https)
 
 ```bash

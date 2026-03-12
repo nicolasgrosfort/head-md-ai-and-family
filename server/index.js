@@ -6,6 +6,7 @@ import express from "express";
 import { createServer } from "http";
 import os from "os";
 import { Server } from "socket.io";
+import { ledOn } from "./libs/led.js";
 import { print } from "./libs/printer.js";
 
 const PORT = 3000;
@@ -19,6 +20,8 @@ const ip = Object.values(os.networkInterfaces())
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.raw({ type: "*/*", limit: "50mb" }));
+
+ledOn(21);
 
 const io = new Server(httpServer, {
   cors: {
@@ -271,6 +274,7 @@ app.post("/mask-to-model", async (req, res) => {
     });
 
     io.emit("model", result.data.model_glb.url);
+    ledOn(21);
     res.status(200).json({
       status: "ok",
       data: {
