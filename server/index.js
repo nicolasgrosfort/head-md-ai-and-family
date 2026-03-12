@@ -6,6 +6,7 @@ import express from "express";
 import { createServer } from "http";
 import os from "os";
 import { Server } from "socket.io";
+import { print } from "./libs/printer.js";
 
 const PORT = 3000;
 const app = express();
@@ -237,6 +238,17 @@ app.post("/image-to-mask", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Background removal failed", data: err });
+  }
+});
+
+app.post("/print-tsukumogami", async (req, res) => {
+  try {
+    const { lines } = req.body;
+    await print(lines);
+    res.status(200).json({ status: "ok" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Print failed", data: err });
   }
 });
 

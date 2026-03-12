@@ -6,24 +6,32 @@ const serialPort = new SerialPort({
   baudRate: 19200,
 });
 
+let printer = null;
+let printerReady = false;
+
 serialPort.on("open", () => {
-  const printer = new Printer(serialPort);
-
+  printer = new Printer(serialPort);
   printer.on("ready", () => {
-    printer
-      .bold(true)
-      .printLine("Hello depuis Node.js!")
-      .horizontalLine(16)
-      .bold(false)
-      .printLine("Ligne normale")
-      .lineFeed(3)
-      .print(() => {
-        console.log("Impression terminée");
-        process.exit();
-      });
+    printerReady = true;
+    console.log("Printer ready");
   });
-
   printer.on("error", (err) => console.error("Erreur imprimante:", err));
 });
 
 serialPort.on("error", (err) => console.error("Erreur port série:", err));
+
+export function print(lines = []) {
+  return new Promise((resolve, reject) => {
+    if (!printer || !printerReady) {
+      return reject(new Error("Printer not ready"));
+    }
+
+    let job = printer;
+    for (const line of lines) {
+      job = job.printLine(line);
+    }
+    job.lineFeed(3).print(() => {
+      resolve();
+    });
+  });
+}

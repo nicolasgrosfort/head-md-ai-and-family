@@ -190,3 +190,27 @@ export const storyToTitle = async (
     throw error;
   }
 };
+
+export const printTsukumogami = async (
+  lines: string[],
+): Promise<{ tsukumogami: string }> => {
+  try {
+    const response = await fetch("/api/print-tsukumogami", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lines,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return { tsukumogami: data.data.tsukumogami };
+  } catch (error) {
+    console.error("Error during print-tsukumogami:", error);
+    throw error;
+  }
+};
