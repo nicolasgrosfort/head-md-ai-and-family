@@ -35,7 +35,14 @@ export function useAudioRecorder(maxDuration = 240): AudioRecorderHook {
         .getUserMedia({ audio: true })
         .then((stream) => {
           setAudioStream(stream);
-          const recorder = new MediaRecorder(stream);
+
+          const mimeType = MediaRecorder.isTypeSupported("audio/wav")
+            ? "audio/wav"
+            : "";
+          const recorder = new MediaRecorder(
+            stream,
+            mimeType ? { mimeType } : {},
+          );
           setMediaRecorder(recorder);
           setIsReady(true);
 
