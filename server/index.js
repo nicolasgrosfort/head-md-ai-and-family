@@ -137,7 +137,7 @@ app.post("/object-to-title", async (req, res) => {
     res.status(200).json({
       status: "ok",
       data: {
-        title: response.candidates[0].content.parts[0].text,
+        title: response.text,
       },
     });
   } catch (err) {
@@ -222,7 +222,7 @@ app.post("/mask-to-model", async (req, res) => {
       },
     });
 
-    io.emit("model", modelUrl);
+    io.emit("model", result.data.model_glb.url);
 
     res.status(200).json({
       status: "ok",

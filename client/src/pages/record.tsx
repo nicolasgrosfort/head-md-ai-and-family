@@ -1,15 +1,15 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useCallback } from "react";
-import { Model } from "../components/model";
 import { PushToTalk } from "../components/push-to-talk";
 import {
-  audioBlobAtom,
+  audioAtom,
   imageAtom,
   maskAtom,
-  modelUrlAtom,
+  modelAtom,
   objectAtom,
   objectTitleAtom,
   speechAtom,
+  statusAtom,
 } from "../store/atoms";
 import {
   imageToMask,
@@ -21,46 +21,57 @@ import {
 } from "../utils/endpoints";
 
 export const Record = () => {
-  const setAudioBlob = useSetAtom(audioBlobAtom);
+  const setAudioBlob = useSetAtom(audioAtom);
   const setSpeech = useSetAtom(speechAtom);
   const setObject = useSetAtom(objectAtom);
   const setObjectTitle = useSetAtom(objectTitleAtom);
   const setImage = useSetAtom(imageAtom);
   const setMask = useSetAtom(maskAtom);
-  const setModel = useSetAtom(modelUrlAtom);
-
-  const model = useAtomValue(modelUrlAtom);
+  const setModel = useSetAtom(modelAtom);
+  const setStatus = useSetAtom(statusAtom);
 
   const handleAudioBlobChange = useCallback(
     async (nextAudioBlob: Blob | null) => {
       setAudioBlob(nextAudioBlob);
 
       if (nextAudioBlob) {
-        console.log("Audio blob updated:", nextAudioBlob);
+        try {
+          setStatus("Listening");
+          console.log("Audio blob updated:", nextAudioBlob);
 
-        const { text } = await speechToText(nextAudioBlob);
-        console.log("Speech to text result:", text);
-        setSpeech(text);
+          const { text } = await speechToText(nextAudioBlob);
+          console.log("Speech to text result:", text);
+          setSpeech(text);
 
-        const { object } = await textToObject(text);
-        console.log("Text to object result:", object);
-        setObject(object);
+          setStatus("Processing");
+          console.log("Processing started for text:", text);
 
-        const { title: objectTitle } = await objectToTitle(object);
-        console.log("Object to title result:", objectTitle);
-        setObjectTitle(objectTitle);
+          const { object } = await textToObject(text);
+          console.log("Text to object result:", object);
+          setObject(object);
 
-        const { image } = await objectToImage(object);
-        console.log("Object to image result:", image);
-        setImage(image);
+          const { title: objectTitle } = await objectToTitle(object);
+          console.log("Object to title result:", objectTitle);
+          setObjectTitle(objectTitle);
 
-        const { mask } = await imageToMask(image);
-        console.log("Image to mask result:", mask);
-        setMask(mask);
+          const { image } = await objectToImage(object);
+          console.log("Object to image result:", image);
+          setImage(image);
 
-        const { model } = await maskToModel(mask, objectTitle);
-        console.log("Mask to model result:", model);
-        setModel(model);
+          const { mask } = await imageToMask(image);
+          console.log("Image to mask result:", mask);
+          setMask(mask);
+
+          const { model } = await maskToModel(mask, objectTitle);
+          console.log("Mask to model result:", model);
+          setModel(model);
+
+          setStatus("Ready");
+          console.log("Processing completed, model is ready:", model);
+        } catch (error) {
+          console.error("Error during processing:", error);
+          setStatus("Error");
+        }
       }
     },
     [
@@ -71,16 +82,13 @@ export const Record = () => {
       setImage,
       setMask,
       setModel,
+      setStatus,
     ],
   );
 
   return (
     <main className="w-dvw h-dvh flex items-center justify-center text-3xl">
-      {model ? (
-        <Model url={model} />
-      ) : (
-        <PushToTalk onAudioBlobChange={handleAudioBlobChange} />
-      )}
+      <PushToTalk onAudioBlobChange={handleAudioBlobChange} />
     </main>
   );
 };

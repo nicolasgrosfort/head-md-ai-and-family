@@ -1,24 +1,24 @@
 import { atom } from "jotai";
 
 const isConnectedAtom = atom(false);
+const statusAtom = atom<string | null>(null);
 
-const audioBlobAtom = atom<Blob | null>(null);
+const audioAtom = atom<Blob | null>(null);
 const speechAtom = atom<string | null>(null);
 const objectAtom = atom<string | null>(null);
 const imageAtom = atom<string | null>(null);
 const maskAtom = atom<string | null>(null);
 const objectTitleAtom = atom<string | null>(null);
-const modelUrlAtom = atom<string | null>(
-  "https://v3b.fal.media/files/b/0a91dda9/DT2uTfwxYrYUcVyYMrRE7_combined_scene.glb",
-);
+const modelAtom = atom<string | null>(null);
 
 export {
-  audioBlobAtom,
+  audioAtom,
   imageAtom,
   isConnectedAtom,
   maskAtom,
-  modelUrlAtom,
+  modelAtom,
   objectAtom,
   objectTitleAtom,
   speechAtom,
+  statusAtom,
 };

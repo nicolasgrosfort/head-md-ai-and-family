@@ -3,7 +3,7 @@ import { Model } from "../components/model";
 import {
   imageAtom,
   maskAtom,
-  modelUrlAtom,
+  modelAtom,
   objectAtom,
   objectTitleAtom,
   speechAtom,
@@ -15,7 +15,7 @@ export const Debug = () => {
   const objectTitle = useAtomValue(objectTitleAtom);
   const image = useAtomValue(imageAtom);
   const mask = useAtomValue(maskAtom);
-  const modelUrl = useAtomValue(modelUrlAtom);
+  const modelUrl = useAtomValue(modelAtom);
 
   return (
     <div className="fixed inset-0 pointer-events-none w-dvw h-dvh flex flex-col gap-4 items-start p-4">

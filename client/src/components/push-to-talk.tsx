@@ -1,6 +1,8 @@
+import { useAtomValue } from "jotai";
 import { useEffect } from "react";
 import { useWebHaptics } from "web-haptics/react";
 import { useAudioRecorder } from "../hooks/useAudioRecorder";
+import { statusAtom } from "../store/atoms";
 
 type PushToTalkProps = {
   onAudioBlobChange?: (blob: Blob | null) => void;
@@ -13,9 +15,10 @@ export const PushToTalk = ({
   onStartRecording,
   onStopRecording,
 }: PushToTalkProps) => {
+  const status = useAtomValue(statusAtom);
+  const { trigger } = useWebHaptics({ debug: true });
   const { isRecording, isReady, audioBlob, startRecording, stopRecording } =
     useAudioRecorder(240);
-  const { trigger } = useWebHaptics({ debug: true });
 
   useEffect(() => {
     if (onAudioBlobChange) {
@@ -47,14 +50,16 @@ export const PushToTalk = ({
       onMouseUp={handleMouseUp}
       onTouchStart={handleMouseDown}
       onTouchEnd={handleMouseUp}
-      className="w-full h-full bg-red-700 text-white font-bold font-mono cursor-pointer select-none active:scale-95"
-      disabled={!isReady}
+      className="w-full h-full bg-red-700 text-white font-bold font-mono cursor-pointer select-none active:scale-95 disabled:opacity-60"
+      disabled={!isReady || !!status}
     >
-      {isReady
-        ? isRecording
-          ? "Recording..."
-          : "Push to Talk"
-        : "Initializing..."}
+      {status
+        ? status
+        : isReady
+          ? isRecording
+            ? "Recording..."
+            : "Push to Talk"
+          : "Initializing..."}
     </button>
   );
 };

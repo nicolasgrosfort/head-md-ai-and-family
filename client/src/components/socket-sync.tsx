@@ -2,12 +2,12 @@
 
 import { useSetAtom } from "jotai";
 import { useEffect } from "react";
-import { isConnectedAtom, modelUrlAtom } from "../store/atoms";
+import { isConnectedAtom, modelAtom } from "../store/atoms";
 import { getSocket } from "../utils/socket";
 
 export const SocketSync = ({ children }: { children: React.ReactNode }) => {
   const setIsConnected = useSetAtom(isConnectedAtom);
-  const setModel = useSetAtom(modelUrlAtom);
+  const setModel = useSetAtom(modelAtom);
 
   useEffect(() => {
     const socket = getSocket();
