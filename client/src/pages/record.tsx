@@ -42,16 +42,13 @@ export const Record = () => {
 
       if (nextAudio) {
         try {
-          setStatus("Listening");
           console.log("Audio blob updated:", nextAudio);
 
           const { text } = await speechToText(nextAudio);
           console.log("Speech to text result:", text);
           setSpeech(text);
 
-          setStatus("Processing");
-          console.log("Processing started for text:", text);
-
+          setStatus("Imagining story");
           const { story } = await textToStory(text);
           console.log("Text to story result:", story);
           setStory(story);
@@ -60,6 +57,7 @@ export const Record = () => {
           console.log("Story to title result:", storyTitle);
           setStoryTitle(storyTitle);
 
+          setStatus("Identifying object");
           const { object } = await textToObject(text);
           console.log("Text to object result:", object);
           setObject(object);
@@ -68,6 +66,7 @@ export const Record = () => {
           console.log("Object to title result:", objectTitle);
           setObjectTitle(objectTitle);
 
+          setStatus("Generating image");
           const { image } = await objectToImage(object);
           console.log("Object to image result:", image);
           setImage(image);
@@ -76,6 +75,7 @@ export const Record = () => {
           console.log("Image to mask result:", mask);
           setMask(mask);
 
+          setStatus("Generating model");
           const { model } = await maskToModel(mask, objectTitle);
           console.log("Mask to model result:", model);
           setModel(model);
@@ -104,7 +104,11 @@ export const Record = () => {
 
   return (
     <main className="w-dvw h-dvh flex items-center justify-center text-3xl">
-      <PushToTalk onAudioBlobChange={handleAudioBlobChange} />
+      <PushToTalk
+        onAudioBlobChange={handleAudioBlobChange}
+        onStartRecording={() => setStatus("Listening")}
+        onStopRecording={() => setStatus("Processing")}
+      />
     </main>
   );
 };
