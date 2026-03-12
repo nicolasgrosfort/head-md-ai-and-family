@@ -18,4 +18,5 @@ export const DEFAULT_TEXT = `
 export const LED = {
   RED: 16,
   GREEN: 26,
+  YEELLOW: 24,
 };

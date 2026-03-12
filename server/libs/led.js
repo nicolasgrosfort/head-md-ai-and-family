@@ -18,6 +18,9 @@ export function ledOn(pin) {
   }
   if (processes[pin]) processes[pin].kill();
   processes[pin] = spawn("gpioset", ["--chip", "gpiochip0", `${pin}=1`]);
+  processes[pin].on("error", (err) =>
+    console.error(`LED on error pin ${pin}:`, err),
+  );
 }
 
 export function ledOff(pin) {
@@ -25,14 +28,16 @@ export function ledOff(pin) {
     console.log(`[LED mock] pin ${pin} OFF`);
     return;
   }
-  if (processes[pin]) {
-    processes[pin].kill();
-    delete processes[pin];
-  }
-  execSync(`gpioset --chip gpiochip0 ${pin}=0`);
+  if (processes[pin]) processes[pin].kill();
+  processes[pin] = spawn("gpioset", ["--chip", "gpiochip0", `${pin}=0`]);
+  processes[pin].on("error", (err) =>
+    console.error(`LED off error pin ${pin}:`, err),
+  );
 }
 
 process.on("SIGINT", () => {
-  Object.keys(processes).forEach((pin) => ledOff(pin));
+  Object.keys(processes).forEach((pin) => {
+    if (processes[pin]) processes[pin].kill();
+  });
   process.exit();
 });

@@ -40,8 +40,9 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY,
 );
 
-ledOff(26); // Green
-ledOff(16); // Red
+ledOff(16);
+ledOff(26);
+ledOff(24);
 
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);

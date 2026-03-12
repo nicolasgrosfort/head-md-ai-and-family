@@ -47,7 +47,6 @@ export const Record = () => {
       if (nextAudio) {
         try {
           console.log("Audio blob updated:", nextAudio);
-          socket.emit("ledOff", 26);
 
           const { text } = await speechToText(nextAudio);
           console.log("Speech to text result:", text);
@@ -57,8 +56,6 @@ export const Record = () => {
           const { story } = await textToStory(text);
           console.log("Text to story result:", story);
           setStory(story);
-
-          socket.emit("ledOn", 26);
 
           const { title: storyTitle } = await storyToTitle(story);
           console.log("Story to title result:", storyTitle);
@@ -87,6 +84,7 @@ export const Record = () => {
           console.log("Mask to model result:", model);
           setModel(model);
 
+          socket.emit("ledOn", LED.GREEN);
           setStatus(null);
           console.log("Processing completed, model is ready:", model);
         } catch (error) {
@@ -122,6 +120,7 @@ export const Record = () => {
           setStatus("Processing");
           const socket = getSocket();
           socket.emit("ledOff", LED.RED);
+          socket.emit("ledOn", LED.YEELLOW);
         }}
       />
     </main>
