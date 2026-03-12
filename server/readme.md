@@ -1,10 +1,13 @@
-# Server
+# Tales Through Things (server)
 
-## Setup FAL AI Api Key
+## Installation
 
-Store your FAL AI API key in an environment variable named `FAL_KEY`:
+### Setup FAL AI Api Key
 
 ```bash
-FAL_KEY="my-api-key"
+# Copy .env.exemple into .env
+cp .env.exemple .env
 ```
+
+Then edit .env and add AI API key
 
