@@ -25,27 +25,27 @@ import {
 } from "../utils/endpoints";
 
 export const Record = () => {
-  const setAudioBlob = useSetAtom(audioAtom);
+  const setStatus = useSetAtom(statusAtom);
+  const setAudio = useSetAtom(audioAtom);
   const setSpeech = useSetAtom(speechAtom);
+  const setStory = useSetAtom(storyAtom);
+  const setStoryTitle = useSetAtom(storyTitleAtom);
   const setObject = useSetAtom(objectAtom);
   const setObjectTitle = useSetAtom(objectTitleAtom);
   const setImage = useSetAtom(imageAtom);
   const setMask = useSetAtom(maskAtom);
   const setModel = useSetAtom(modelAtom);
-  const setStatus = useSetAtom(statusAtom);
-  const setStory = useSetAtom(storyAtom);
-  const setStoryTitle = useSetAtom(storyTitleAtom);
 
   const handleAudioBlobChange = useCallback(
-    async (nextAudioBlob: Blob | null) => {
-      setAudioBlob(nextAudioBlob);
+    async (nextAudio: Blob | null) => {
+      setAudio(nextAudio);
 
-      if (nextAudioBlob) {
+      if (nextAudio) {
         try {
           setStatus("Listening");
-          console.log("Audio blob updated:", nextAudioBlob);
+          console.log("Audio blob updated:", nextAudio);
 
-          const { text } = await speechToText(nextAudioBlob);
+          const { text } = await speechToText(nextAudio);
           console.log("Speech to text result:", text);
           setSpeech(text);
 
@@ -89,7 +89,7 @@ export const Record = () => {
       }
     },
     [
-      setAudioBlob,
+      setAudio,
       setSpeech,
       setObject,
       setObjectTitle,

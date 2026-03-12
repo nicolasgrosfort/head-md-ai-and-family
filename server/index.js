@@ -74,6 +74,7 @@ app.post("/speech-to-text", async (req, res) => {
       },
     );
 
+    io.emit("speech", result.data.text);
     res.status(200).json({
       status: "ok",
       data: {
@@ -95,6 +96,7 @@ app.post("/text-to-story", async (req, res) => {
       contents: text,
     });
 
+    io.emit("story", response.text);
     res.status(200).json({
       status: "ok",
       data: {
@@ -116,6 +118,7 @@ app.post("/story-to-title", async (req, res) => {
       contents: story,
     });
 
+    io.emit("storyTitle", response.text);
     res.status(200).json({
       status: "ok",
       data: {
@@ -137,6 +140,7 @@ app.post("/text-to-object", async (req, res) => {
       contents: text,
     });
 
+    io.emit("object", response.text);
     res.status(200).json({
       status: "ok",
       data: {
@@ -158,6 +162,7 @@ app.post("/object-to-title", async (req, res) => {
       contents: object,
     });
 
+    io.emit("objectTitle", response.text);
     res.status(200).json({
       status: "ok",
       data: {
@@ -188,6 +193,7 @@ app.post("/object-to-image", async (req, res) => {
 
     const imageBase64 = `data:image/png;base64,${response.candidates[0].content.parts[0].inlineData.data}`;
 
+    io.emit("image", imageBase64);
     res.status(200).json({
       status: "ok",
       data: {
@@ -216,6 +222,7 @@ app.post("/image-to-mask", async (req, res) => {
       },
     });
 
+    io.emit("mask", result.data.image.url);
     res.status(200).json({
       status: "ok",
       data: {
@@ -246,13 +253,11 @@ app.post("/mask-to-model", async (req, res) => {
       },
     });
 
-    const model = result.data.model_glb.url;
-    io.emit("model", model);
-
+    io.emit("model", result.data.model_glb.url);
     res.status(200).json({
       status: "ok",
       data: {
-        model: model,
+        model: result.data.model_glb.url,
       },
     });
   } catch (err) {

@@ -1,4 +1,4 @@
-import { useGLTF } from "@react-three/drei";
+import { OrthographicCamera, useGLTF } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Suspense, useRef } from "react";
 import * as THREE from "three";
@@ -10,7 +10,6 @@ export const GLTF = ({ url }: { url: string }) => {
   useFrame(() => {
     if (refGroup.current) {
       refGroup.current.rotation.y += 0.005;
-      refGroup.current.rotation.x += 0.001;
     }
   });
 
@@ -23,7 +22,14 @@ export const GLTF = ({ url }: { url: string }) => {
 
 export const Model = ({ url }: { url: string | null }) => {
   return (
-    <Canvas camera={{ position: [0, 0, 2], fov: 50 }}>
+    <Canvas>
+      <OrthographicCamera
+        makeDefault
+        zoom={500}
+        position={[0, 0, 2]}
+        near={0.1}
+        far={1000}
+      />
       <Suspense fallback={null}>
         <directionalLight
           position={[0, 5, 5]} // devant
