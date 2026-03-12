@@ -85,6 +85,7 @@ export const Record = () => {
           setModel(model);
 
           socket.emit("ledOn", LED.GREEN);
+          socket.emit("ledOff", LED.YEELLOW);
           setStatus(null);
           console.log("Processing completed, model is ready:", model);
         } catch (error) {
@@ -115,6 +116,8 @@ export const Record = () => {
           setStatus("Listening");
           const socket = getSocket();
           socket.emit("ledOn", LED.RED);
+          socket.emit("ledOff", LED.YEELLOW);
+          socket.emit("ledOff", LED.GREEN);
         }}
         onStopRecording={() => {
           setStatus("Processing");
