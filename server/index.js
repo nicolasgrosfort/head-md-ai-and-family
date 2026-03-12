@@ -1,9 +1,9 @@
 import { fal } from "@fal-ai/client";
 import { GoogleGenAI } from "@google/genai";
+import { createClient } from "@supabase/supabase-js";
 import cors from "cors";
 import express from "express";
 import os from "os";
-// import { systemPrompt } from "../client/src/utils/instructions.js";
 
 const PORT = 3000;
 const app = express();
@@ -24,17 +24,33 @@ const google = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SECRET_KEY,
+);
+
 app.post("/speech-to-text", async (req, res) => {
   try {
     const speech = req.body;
-    const speechBase64 = speech.toString("base64");
-    const speechBase64Url = `data:audio/wav;base64,${speechBase64}`;
+
+    const filename = `audio-${Date.now()}.wav`;
+    const { error } = await supabase.storage
+      .from("audio")
+      .upload(filename, speech, { contentType: "audio/wav" });
+
+    if (error) {
+      throw error;
+    }
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("audio").getPublicUrl(filename);
 
     const result = await fal.subscribe(
       "fal-ai/elevenlabs/speech-to-text/scribe-v2",
       {
         input: {
-          audio_url: speechBase64Url,
+          audio_url: publicUrl,
         },
         logs: true,
         onQueueUpdate: (update) => {

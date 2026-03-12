@@ -1,5 +1,6 @@
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback } from "react";
+import { Model } from "../components/model";
 import { PushToTalk } from "../components/push-to-talk";
 import {
   audioBlobAtom,
@@ -27,6 +28,8 @@ export const Record = () => {
   const setImage = useSetAtom(imageAtom);
   const setMask = useSetAtom(maskAtom);
   const setModel = useSetAtom(modelUrlAtom);
+
+  const model = useAtomValue(modelUrlAtom);
 
   const handleAudioBlobChange = useCallback(
     async (nextAudioBlob: Blob | null) => {
@@ -73,7 +76,11 @@ export const Record = () => {
 
   return (
     <main className="w-dvw h-dvh flex items-center justify-center text-3xl">
-      <PushToTalk onAudioBlobChange={handleAudioBlobChange} />
+      {model ? (
+        <Model url={model} />
+      ) : (
+        <PushToTalk onAudioBlobChange={handleAudioBlobChange} />
+      )}
     </main>
   );
 };
