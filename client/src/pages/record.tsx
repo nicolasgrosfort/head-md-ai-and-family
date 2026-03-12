@@ -23,6 +23,7 @@ import {
   textToObject,
   textToStory,
 } from "../utils/endpoints";
+import { getSocket } from "../utils/socket";
 
 export const Record = () => {
   const setStatus = useSetAtom(statusAtom);
@@ -38,11 +39,14 @@ export const Record = () => {
 
   const handleAudioBlobChange = useCallback(
     async (nextAudio: Blob | null) => {
+      const socket = getSocket();
+
       setAudio(nextAudio);
 
       if (nextAudio) {
         try {
           console.log("Audio blob updated:", nextAudio);
+          socket.emit("ledOff", 26);
 
           const { text } = await speechToText(nextAudio);
           console.log("Speech to text result:", text);
@@ -52,6 +56,8 @@ export const Record = () => {
           const { story } = await textToStory(text);
           console.log("Text to story result:", story);
           setStory(story);
+
+          socket.emit("ledOn", 26);
 
           const { title: storyTitle } = await storyToTitle(story);
           console.log("Story to title result:", storyTitle);

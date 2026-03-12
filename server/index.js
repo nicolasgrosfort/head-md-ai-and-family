@@ -6,7 +6,7 @@ import express from "express";
 import { createServer } from "http";
 import os from "os";
 import { Server } from "socket.io";
-import { ledOn } from "./libs/led.js";
+import { ledOff, ledOn } from "./libs/led.js";
 import { print } from "./libs/printer.js";
 
 const PORT = 3000;
@@ -20,8 +20,6 @@ const ip = Object.values(os.networkInterfaces())
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.raw({ type: "*/*", limit: "50mb" }));
-
-ledOn(21);
 
 const io = new Server(httpServer, {
   cors: {
@@ -44,6 +42,20 @@ const supabase = createClient(
 
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
+
+  socket.on("ledOn", (pin) => {
+    console.log(`Turning LED on pin ${pin} ON`);
+    ledOn(pin);
+  });
+
+  socket.on("ledOff", (pin) => {
+    console.log(`Turning LED on pin ${pin} OFF`);
+    ledOff(pin);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected:", socket.id);
+  });
 });
 
 app.post("/speech-to-text", async (req, res) => {
@@ -274,7 +286,6 @@ app.post("/mask-to-model", async (req, res) => {
     });
 
     io.emit("model", result.data.model_glb.url);
-    ledOn(21);
     res.status(200).json({
       status: "ok",
       data: {
