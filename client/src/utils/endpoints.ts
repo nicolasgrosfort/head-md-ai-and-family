@@ -192,7 +192,8 @@ export const storyToTitle = async (
 };
 
 type PrintLine =
-  | { type: "text" | "image"; content: string }
+  | { type: "text"; content: string; bold?: boolean }
+  | { type: "image"; path: string }
   | { type: "newline"; count: number };
 export const printTsukumogami = async (
   lines: PrintLine[],

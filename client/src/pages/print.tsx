@@ -18,12 +18,13 @@ export const Print = () => {
             printTsukumogami([
               {
                 type: "image",
-                content: mask,
+                path: mask,
               },
               { type: "newline", count: 2 },
               {
                 type: "text",
                 content: storyTitle,
+                bold: true,
               },
               { type: "newline", count: 1 },
               {

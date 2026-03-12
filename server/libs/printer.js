@@ -30,7 +30,9 @@ export function print(items = []) {
     for (const item of items) {
       switch (item.type) {
         case "text":
+          if (item.bold) job = job.bold(true);
           job = job.printLine(item.content ?? "");
+          if (item.bold) job = job.bold(false);
           break;
         case "newline":
           job = job.lineFeed(item.count ?? 1);
