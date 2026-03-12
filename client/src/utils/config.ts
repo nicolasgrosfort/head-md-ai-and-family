@@ -15,3 +15,7 @@ export const DEFAULT_TEXT = `
     Je ne sais toujours pas exactement ce qui s’est passé ce jour-là.
     Mais depuis, chaque fois que je passe près de la rivière, je regarde toujours les rochers… au cas où il y aurait un autre donut posé là.
 `;
+export const LED = {
+  RED: 16,
+  GREEN: 26,
+};

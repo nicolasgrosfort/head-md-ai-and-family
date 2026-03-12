@@ -13,6 +13,7 @@ import {
   storyAtom,
   storyTitleAtom,
 } from "../store/atoms";
+import { LED } from "../utils/config";
 import {
   imageToMask,
   maskToModel,
@@ -112,8 +113,16 @@ export const Record = () => {
     <main className="w-dvw h-dvh flex items-center justify-center text-3xl p-4">
       <PushToTalk
         onAudioBlobChange={handleAudioBlobChange}
-        onStartRecording={() => setStatus("Listening")}
-        onStopRecording={() => setStatus("Processing")}
+        onStartRecording={() => {
+          setStatus("Listening");
+          const socket = getSocket();
+          socket.emit("ledOn", LED.RED);
+        }}
+        onStopRecording={() => {
+          setStatus("Processing");
+          const socket = getSocket();
+          socket.emit("ledOff", LED.RED);
+        }}
       />
     </main>
   );
