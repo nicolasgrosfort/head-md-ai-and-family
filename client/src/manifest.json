@@ -1,0 +1,25 @@
+{
+  "short_name": "TTT",
+  "name": "Tales Through Things",
+  "icons": [
+    {
+      "src": "assets/favicons/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/favicons/favicon-256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/favicons/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "black",
+  "background_color": "black"
+}
