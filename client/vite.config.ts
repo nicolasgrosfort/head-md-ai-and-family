@@ -17,6 +17,11 @@ export default defineConfig({
       cert: fs.readFileSync("./localhost+4.pem"),
     },
     proxy: {
+      "/socket.io": {
+        target: `http://${ip}:3000`,
+        changeOrigin: true,
+        ws: true,
+      },
       "/api": {
         target: `http://${ip}:3000`,
         changeOrigin: true,

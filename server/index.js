@@ -3,10 +3,13 @@ import { GoogleGenAI } from "@google/genai";
 import { createClient } from "@supabase/supabase-js";
 import cors from "cors";
 import express from "express";
+import { createServer } from "http";
 import os from "os";
+import { Server } from "socket.io";
 
 const PORT = 3000;
 const app = express();
+const httpServer = createServer(app);
 
 const ip = Object.values(os.networkInterfaces())
   .flat()
@@ -15,6 +18,12 @@ const ip = Object.values(os.networkInterfaces())
 app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.raw({ type: "*/*" }));
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+  },
+});
 
 fal.config({
   credentials: process.env.FAL_API_KEY,
@@ -28,6 +37,10 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY,
 );
+
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+});
 
 app.post("/speech-to-text", async (req, res) => {
   try {
@@ -209,6 +222,8 @@ app.post("/mask-to-model", async (req, res) => {
       },
     });
 
+    io.emit("model", modelUrl);
+
     res.status(200).json({
       status: "ok",
       data: {
@@ -221,7 +236,7 @@ app.post("/mask-to-model", async (req, res) => {
   }
 });
 
-app.listen(PORT, "0.0.0.0", () => {
+httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running at:`);
   console.log(`http://localhost:${PORT}`);
   console.log(`http://${ip}:${PORT}`);
