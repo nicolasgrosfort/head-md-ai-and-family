@@ -13,8 +13,8 @@ export default defineConfig({
     port: 5173,
     allowedHosts: [`http://${ip}:5173`],
     https: {
-      key: fs.readFileSync("./localhost+4-key.pem"),
-      cert: fs.readFileSync("./localhost+4.pem"),
+      key: fs.readFileSync("./localhost+2-key.pem"),
+      cert: fs.readFileSync("./localhost+2.pem"),
     },
     proxy: {
       "/socket.io": {
