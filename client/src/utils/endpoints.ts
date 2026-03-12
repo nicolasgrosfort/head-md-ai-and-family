@@ -144,3 +144,49 @@ export const maskToModel = async (
     throw error;
   }
 };
+
+export const textToStory = async (text: string): Promise<{ story: string }> => {
+  try {
+    const response = await fetch("/api/text-to-story", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: [instructions.textToStory, text].concat(INSTRUCTION_SEPARATOR),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return { story: data.data.story };
+  } catch (error) {
+    console.error("Error during text-to-story:", error);
+    throw error;
+  }
+};
+
+export const storyToTitle = async (
+  story: string,
+): Promise<{ title: string }> => {
+  try {
+    const response = await fetch("/api/story-to-title", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        story: [instructions.storyToTitle, story].concat(INSTRUCTION_SEPARATOR),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return { title: data.data.title };
+  } catch (error) {
+    console.error("Error during story-to-title:", error);
+    throw error;
+  }
+};

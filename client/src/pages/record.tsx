@@ -10,6 +10,8 @@ import {
   objectTitleAtom,
   speechAtom,
   statusAtom,
+  storyAtom,
+  storyTitleAtom,
 } from "../store/atoms";
 import {
   imageToMask,
@@ -17,7 +19,9 @@ import {
   objectToImage,
   objectToTitle,
   speechToText,
+  storyToTitle,
   textToObject,
+  textToStory,
 } from "../utils/endpoints";
 
 export const Record = () => {
@@ -29,6 +33,8 @@ export const Record = () => {
   const setMask = useSetAtom(maskAtom);
   const setModel = useSetAtom(modelAtom);
   const setStatus = useSetAtom(statusAtom);
+  const setStory = useSetAtom(storyAtom);
+  const setStoryTitle = useSetAtom(storyTitleAtom);
 
   const handleAudioBlobChange = useCallback(
     async (nextAudioBlob: Blob | null) => {
@@ -45,6 +51,14 @@ export const Record = () => {
 
           setStatus("Processing");
           console.log("Processing started for text:", text);
+
+          const { story } = await textToStory(text);
+          console.log("Text to story result:", story);
+          setStory(story);
+
+          const { title: storyTitle } = await storyToTitle(story);
+          console.log("Story to title result:", storyTitle);
+          setStoryTitle(storyTitle);
 
           const { object } = await textToObject(text);
           console.log("Text to object result:", object);
@@ -66,7 +80,7 @@ export const Record = () => {
           console.log("Mask to model result:", model);
           setModel(model);
 
-          setStatus("Ready");
+          setStatus(null);
           console.log("Processing completed, model is ready:", model);
         } catch (error) {
           console.error("Error during processing:", error);
@@ -83,6 +97,8 @@ export const Record = () => {
       setMask,
       setModel,
       setStatus,
+      setStory,
+      setStoryTitle,
     ],
   );
 

@@ -86,18 +86,42 @@ app.post("/speech-to-text", async (req, res) => {
   }
 });
 
-app.post("/text-to-story", (req, res) => {
+app.post("/text-to-story", async (req, res) => {
   try {
-    res.json({ status: "ok" });
+    const { text } = req.body;
+
+    const response = await google.models.generateContent({
+      model: "gemini-3.1-flash-lite-preview",
+      contents: text,
+    });
+
+    res.status(200).json({
+      status: "ok",
+      data: {
+        story: response.text,
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Text to story failed", data: err });
   }
 });
 
-app.post("/story-to-title", (req, res) => {
+app.post("/story-to-title", async (req, res) => {
   try {
-    res.json({ status: "ok" });
+    const { story } = req.body;
+
+    const response = await google.models.generateContent({
+      model: "gemini-3.1-flash-lite-preview",
+      contents: story,
+    });
+
+    res.status(200).json({
+      status: "ok",
+      data: {
+        title: response.text,
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Story to title failed", data: err });
@@ -222,12 +246,13 @@ app.post("/mask-to-model", async (req, res) => {
       },
     });
 
-    io.emit("model", result.data.model_glb.url);
+    const model = result.data.model_glb.url;
+    io.emit("model", model);
 
     res.status(200).json({
       status: "ok",
       data: {
-        model: result.data.model_glb.url,
+        model: model,
       },
     });
   } catch (err) {

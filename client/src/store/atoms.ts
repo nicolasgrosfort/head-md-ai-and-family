@@ -4,6 +4,8 @@ const isConnectedAtom = atom(false);
 const statusAtom = atom<string | null>(null);
 
 const audioAtom = atom<Blob | null>(null);
+const storyAtom = atom<string | null>(null);
+const storyTitleAtom = atom<string | null>(null);
 const speechAtom = atom<string | null>(null);
 const objectAtom = atom<string | null>(null);
 const imageAtom = atom<string | null>(null);
@@ -21,4 +23,6 @@ export {
   objectTitleAtom,
   speechAtom,
   statusAtom,
+  storyAtom,
+  storyTitleAtom,
 };
