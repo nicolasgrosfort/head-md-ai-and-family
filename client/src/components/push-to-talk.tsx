@@ -51,15 +51,15 @@ export const PushToTalk = ({
       onTouchStart={handleMouseDown}
       onTouchEnd={handleMouseUp}
       className="w-full h-full bg-red-800 font-bold font-mono cursor-pointer select-none border active:scale-95 disabled:opacity-60"
-      disabled={!isReady || !!status || status === "Error"}
+      disabled={!isReady}
     >
       {status
         ? status
         : isReady
           ? isRecording
-            ? "RECORDING..."
-            : "HOLD TO TALK"
-          : "INIZIALIZING..."}
+            ? "Recording..."
+            : "Push to Talk"
+          : "Initializing..."}
     </button>
   );
 };
