@@ -191,8 +191,11 @@ export const storyToTitle = async (
   }
 };
 
+type PrintLine =
+  | { type: "text" | "image"; content: string }
+  | { type: "newline"; count: number };
 export const printTsukumogami = async (
-  lines: string[],
+  lines: PrintLine[],
 ): Promise<{ tsukumogami: string }> => {
   try {
     const response = await fetch("/api/print-tsukumogami", {

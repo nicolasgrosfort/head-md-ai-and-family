@@ -1,12 +1,13 @@
 import { useAtomValue } from "jotai";
-import { storyAtom, storyTitleAtom } from "../store/atoms";
+import { maskAtom, storyAtom, storyTitleAtom } from "../store/atoms";
 import { printTsukumogami } from "../utils/endpoints";
 
 export const Print = () => {
   const storyTitle = useAtomValue(storyTitleAtom);
   const story = useAtomValue(storyAtom);
+  const mask = useAtomValue(maskAtom);
 
-  const readyToPrint = storyTitle && story;
+  const readyToPrint = storyTitle && story && mask;
 
   return (
     <main className="h-dvh w-dvw flex items-center justify-center">
@@ -14,15 +15,28 @@ export const Print = () => {
         <button
           className="text-3xl font-mono font-bold cursor-pointer"
           onClick={async () => {
-            printTsukumogami([storyTitle, story]);
+            printTsukumogami([
+              {
+                type: "image",
+                content: mask,
+              },
+              { type: "newline", count: 2 },
+              {
+                type: "text",
+                content: storyTitle,
+              },
+              { type: "newline", count: 1 },
+              {
+                type: "text",
+                content: story,
+              },
+            ]);
           }}
         >
           PRINT
         </button>
       ) : (
-        <p className="text-2xl font-mono italic text-gray-500">
-          Share a memory to enable printing
-        </p>
+        <p className="text-xl font-mono">Share a memory to enable printing</p>
       )}
     </main>
   );

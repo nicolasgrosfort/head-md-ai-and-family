@@ -20,18 +20,26 @@ serialPort.on("open", () => {
 
 serialPort.on("error", (err) => console.error("Erreur port série:", err));
 
-export function print(lines = []) {
+export function print(items = []) {
   return new Promise((resolve, reject) => {
     if (!printer || !printerReady) {
       return reject(new Error("Printer not ready"));
     }
 
     let job = printer;
-    for (const line of lines) {
-      job = job.printLine(line);
+    for (const item of items) {
+      switch (item.type) {
+        case "text":
+          job = job.printLine(item.content ?? "");
+          break;
+        case "newline":
+          job = job.lineFeed(item.count ?? 1);
+          break;
+        case "image":
+          job = job.printImage(item.path);
+          break;
+      }
     }
-    job.lineFeed(3).print(() => {
-      resolve();
-    });
+    job.lineFeed(3).print(() => resolve());
   });
 }
