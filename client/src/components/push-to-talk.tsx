@@ -48,6 +48,7 @@ export const PushToTalk = ({
       onTouchStart={handleMouseDown}
       onTouchEnd={handleMouseUp}
       className="w-full h-full bg-red-700 text-white font-bold font-mono cursor-pointer select-none active:scale-95"
+      disabled={!isReady}
     >
       {isReady
         ? isRecording
