@@ -1,4 +1,5 @@
 import { useAtomValue } from "jotai";
+import { useState } from "react";
 import { maskAtom, storyAtom, storyTitleAtom } from "../store/atoms";
 import { printTsukumogami } from "../utils/endpoints";
 
@@ -7,15 +8,19 @@ export const Print = () => {
   const story = useAtomValue(storyAtom);
   const mask = useAtomValue(maskAtom);
 
+  const [isPrinting, setIsPrinting] = useState<boolean>(false);
+
   const readyToPrint = storyTitle && story && mask;
 
   return (
-    <main className="h-dvh w-dvw flex items-center justify-center">
+    <main className="h-dvh w-dvw flex items-center justify-center p-4">
       {readyToPrint ? (
         <button
-          className="text-3xl font-mono font-bold cursor-pointer"
+          className="w-full h-full bg-green-800 border text-3xl font-mono font-bold cursor-pointer active:scale-95"
+          disabled={isPrinting}
           onClick={async () => {
-            printTsukumogami([
+            setIsPrinting(true);
+            await printTsukumogami([
               {
                 type: "image",
                 path: mask,
@@ -34,9 +39,10 @@ export const Print = () => {
                 content: story,
               },
             ]);
+            setIsPrinting(false);
           }}
         >
-          PRINT
+          {isPrinting ? "PRINTING..." : "PRINT"}
         </button>
       ) : (
         <p className="text-xl font-mono">Share a memory to enable printing</p>

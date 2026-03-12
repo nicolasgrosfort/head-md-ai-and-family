@@ -50,7 +50,7 @@ export const PushToTalk = ({
       onMouseUp={handleMouseUp}
       onTouchStart={handleMouseDown}
       onTouchEnd={handleMouseUp}
-      className="w-full h-full bg-red-700 text-white font-bold font-mono cursor-pointer select-none active:scale-95 disabled:opacity-60"
+      className="w-full h-full bg-red-800 font-bold font-mono cursor-pointer select-none border active:scale-95 disabled:opacity-60"
       disabled={!isReady || !!status || status === "Error"}
     >
       {status

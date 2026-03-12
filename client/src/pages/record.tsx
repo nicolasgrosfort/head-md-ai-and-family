@@ -103,7 +103,7 @@ export const Record = () => {
   );
 
   return (
-    <main className="w-dvw h-dvh flex items-center justify-center text-3xl">
+    <main className="w-dvw h-dvh flex items-center justify-center text-3xl p-4">
       <PushToTalk
         onAudioBlobChange={handleAudioBlobChange}
         onStartRecording={() => setStatus("Listening")}
