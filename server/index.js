@@ -87,7 +87,7 @@ app.post("/text-to-object", async (req, res) => {
     res.status(200).json({
       status: "ok",
       data: {
-        object: response.candidates[0].content.parts[0].text,
+        object: response.text,
       },
     });
   } catch (err) {
@@ -96,9 +96,21 @@ app.post("/text-to-object", async (req, res) => {
   }
 });
 
-app.post("/object-to-title", (req, res) => {
+app.post("/object-to-title", async (req, res) => {
   try {
-    res.json({ status: "ok" });
+    const { object } = req.body;
+
+    const response = await google.models.generateContent({
+      model: "gemini-3.1-flash-lite-preview",
+      contents: object,
+    });
+
+    res.status(200).json({
+      status: "ok",
+      data: {
+        title: response.candidates[0].content.parts[0].text,
+      },
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Object to title failed", data: err });
@@ -107,28 +119,26 @@ app.post("/object-to-title", (req, res) => {
 
 app.post("/object-to-image", async (req, res) => {
   try {
-    const { prompt } = req.body;
-
-    let mimeType = null;
-    let image = null;
+    const { object } = req.body;
 
     const response = await google.models.generateContent({
       model: "gemini-2.5-flash-image",
-      // contents: [systemPrompt.objectToImage, prompt].concat(" - "),
+      config: {
+        responseModalities: ["IMAGE"],
+        imageConfig: {
+          aspectRatio: "1:1",
+          imageSize: "1k",
+        },
+      },
+      contents: object,
     });
 
-    for (const part of response.candidates[0].content.parts) {
-      if (part.inlineData) {
-        mimeType = part.inlineData.mimeType;
-        image = part.inlineData.data;
-      }
-    }
+    const imageBase64 = `data:image/png;base64,${response.candidates[0].content.parts[0].inlineData.data}`;
 
     res.status(200).json({
       status: "ok",
       data: {
-        mimeType,
-        image,
+        image: imageBase64,
       },
     });
   } catch (err) {
@@ -137,7 +147,7 @@ app.post("/object-to-image", async (req, res) => {
   }
 });
 
-app.post("/remove-background-image", async (req, res) => {
+app.post("/image-to-mask", async (req, res) => {
   try {
     const { image } = req.body;
 
@@ -153,14 +163,10 @@ app.post("/remove-background-image", async (req, res) => {
       },
     });
 
-    const mimeType = result.data.image.content_type;
-    const imageUrl = result.data.image.url;
-
     res.status(200).json({
       status: "ok",
       data: {
-        mimeType,
-        imageUrl,
+        mask: result.data.image.url,
       },
     });
   } catch (err) {
@@ -169,15 +175,15 @@ app.post("/remove-background-image", async (req, res) => {
   }
 });
 
-app.post("/image-to-model", async (req, res) => {
+app.post("/mask-to-model", async (req, res) => {
   try {
-    const { image } = req.body;
+    const { mask, title } = req.body;
 
     const result = await fal.subscribe("fal-ai/sam-3/3d-objects", {
       input: {
-        image_url: image,
-        mask_urls: [image],
-        prompt: "a teddy bear",
+        image_url: mask,
+        mask_urls: [mask],
+        prompt: title,
       },
       logs: true,
       onQueueUpdate: (update) => {
@@ -186,16 +192,16 @@ app.post("/image-to-model", async (req, res) => {
         }
       },
     });
-    console.log(result.data);
-    console.log(result.requestId);
 
     res.status(200).json({
       status: "ok",
-      data: result.data,
+      data: {
+        model: result.data.model_glb.url,
+      },
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Image to model failed", data: err });
+    res.status(500).json({ error: "Mask to model failed", data: err });
   }
 });
 
