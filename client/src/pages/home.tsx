@@ -1,13 +1,13 @@
 import { Canvas } from "@react-three/fiber";
 import { useAtom } from "jotai";
 import { Suspense, useState } from "react";
-import { Model } from "./components/model.tsx";
-import { PushToTalk } from "./components/push-to-talk.tsx";
-import { audioBlobAtom } from "./store/atoms.ts";
-import { blobToBase64 } from "./utils/helpers.ts";
+import { Model } from "../components/model.tsx";
+import { PushToTalk } from "../components/push-to-talk.tsx";
+import { audioBlobAtom } from "../store/atoms.ts";
+import { blobToBase64 } from "../utils/helpers.ts";
 // import { blobToBase64 } from "./utils/helpers.ts";
 
-function App() {
+export const Home = () => {
   const [audioBlob] = useAtom(audioBlobAtom);
   const [googleResponse, setGoogleResponse] = useState<string | null>(null);
   const [response, setResponse] = useState<string | null>(null);
@@ -186,6 +186,4 @@ function App() {
       )}
     </main>
   );
-}
-
-export default App;
+};
