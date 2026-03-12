@@ -9,7 +9,8 @@ export const GLTF = ({ url }: { url: string }) => {
 
   useFrame(() => {
     if (refGroup.current) {
-      refGroup.current.rotation.y += 0.01;
+      refGroup.current.rotation.y += 0.005;
+      refGroup.current.rotation.x += 0.001;
     }
   });
 
