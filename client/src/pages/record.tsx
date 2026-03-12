@@ -134,6 +134,15 @@ export const Record = () => {
           socket.emit("ledOff", LED.RED);
           socket.emit("ledOff", LED.YEELLOW);
           socket.emit("ledOff", LED.GREEN);
+
+          setSpeech(null);
+          setStory(null);
+          setStoryTitle(null);
+          setObject(null);
+          setObjectTitle(null);
+          setImage(null);
+          setMask(null);
+          setModel(null);
         }}
       />
     </main>
