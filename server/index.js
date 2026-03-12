@@ -85,12 +85,6 @@ app.post("/speech-to-text", async (req, res) => {
         input: {
           audio_url: publicUrl,
         },
-        logs: true,
-        onQueueUpdate: (update) => {
-          if (update.status === "IN_PROGRESS") {
-            update.logs.map((log) => log.message).forEach(console.log);
-          }
-        },
       },
     );
 
@@ -239,12 +233,6 @@ app.post("/image-to-mask", async (req, res) => {
       input: {
         image_url: image,
       },
-      logs: true,
-      onQueueUpdate: (update) => {
-        if (update.status === "IN_PROGRESS") {
-          update.logs.map((log) => log.message).forEach(console.log);
-        }
-      },
     });
 
     io.emit("mask", result.data.image.url);
@@ -280,12 +268,6 @@ app.post("/mask-to-model", async (req, res) => {
         image_url: mask,
         mask_urls: [mask],
         prompt: title,
-      },
-      logs: true,
-      onQueueUpdate: (update) => {
-        if (update.status === "IN_PROGRESS") {
-          update.logs.map((log) => log.message).forEach(console.log);
-        }
       },
     });
 

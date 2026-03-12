@@ -54,6 +54,8 @@ export const PushToTalk = ({
     }
   };
 
+  if (status === "Ready") return;
+
   return (
     <button
       onMouseDown={handleMouseDown}
@@ -68,7 +70,7 @@ export const PushToTalk = ({
         : isReady
           ? isRecording
             ? "Recording..."
-            : "Hold to Talk"
+            : "REC"
           : "Initializing..."}
 
       {!isRecording && (

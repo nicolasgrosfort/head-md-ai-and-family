@@ -1,5 +1,6 @@
 import { useSetAtom } from "jotai";
 import { useCallback } from "react";
+import { PrintButton } from "../components/print-button";
 import { PushToTalk } from "../components/push-to-talk";
 import {
   audioAtom,
@@ -86,7 +87,7 @@ export const Record = () => {
 
           socket.emit("ledOn", LED.GREEN);
           socket.emit("ledOff", LED.YEELLOW);
-          setStatus(null);
+          setStatus("Ready");
           console.log("Processing completed, model is ready:", model);
         } catch (error) {
           console.error("Error during processing:", error);
@@ -126,6 +127,7 @@ export const Record = () => {
           socket.emit("ledOn", LED.YEELLOW);
         }}
       />
+      <PrintButton />
     </main>
   );
 };
