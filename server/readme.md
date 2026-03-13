@@ -2,12 +2,12 @@
 
 ## Installation
 
-### Setup FAL AI Api Key
+### Setup environment variables
 
 ```bash
 # Copy .env.exemple into .env
 cp .env.exemple .env
 ```
 
-Then edit .env and add AI API key
+Then edit .env and put correct AI API key
 
