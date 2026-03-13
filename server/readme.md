@@ -1,4 +1,4 @@
-# Tales Through Things (server)
+# Server
 
 ## Installation
 

@@ -1,4 +1,4 @@
-# Tales Through Things (client)
+# Client
 
 ## Installation
 

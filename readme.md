@@ -2,6 +2,8 @@
 
 A workshop to explore creations of devices, installations, or experiences that invite people to explore AI agents within family contexts.
 
+![Final Render](./docs/assets/images/2026-03-13-final-render-3.png)
+
 ## Installation
 
 The project has three main parts: Raspberry Pi, client, server
