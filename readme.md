@@ -4,6 +4,8 @@ A workshop to explore creations of devices, installations, or experiences that i
 
 ![Final Render](./docs/assets/images/2026-03-13-final-render-3.png)
 
+[Press Kit](./docs/press-kit/tales-through-things-presentation.pdf)
+
 ## Installation
 
 The project has three main parts: Raspberry Pi, client, server
