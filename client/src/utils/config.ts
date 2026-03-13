@@ -1,6 +1,6 @@
 export const INSTRUCTION_SEPARATOR = " --------- ";
 export const DEFAULT_MODEL_URL =
-  "https://v3b.fal.media/files/b/0a91e9c4/nAnXJXQ9gtT8LlxImu9Ui_combined_scene.glb";
+  "https://v3b.fal.media/files/b/0a91cbf1/gp3uZYh_aJky9G7KpUVq5_combined_scene.glb";
 export const DEFAULT_TEXT = `
     L’autre jour, il m’est arrivé un truc vraiment bizarre. Je marchais le long de la rivière, juste pour prendre l’air, quand j’ai vu un donut posé sur un rocher. Comme ça, tout seul. Pas d’emballage, rien. Je me suis dit que quelqu’un l’avait sûrement oublié.
     Au moment où je me suis approché, j’ai entendu du bruit derrière moi. C’étaient trois sœurs que je vois parfois dans le coin. Elles regardaient aussi le donut, un peu perplexes.
