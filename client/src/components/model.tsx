@@ -9,12 +9,12 @@ export const GLTF = ({ url }: { url: string }) => {
 
   useFrame(() => {
     if (refGroup.current) {
-      refGroup.current.rotation.y += 0.005;
+      refGroup.current.rotation.x += 0.005;
     }
   });
 
   return (
-    <group ref={refGroup}>
+    <group ref={refGroup} rotation={[0, 0, Math.PI / 2]}>
       <primitive object={scene} />
     </group>
   );
