@@ -8,8 +8,8 @@ A workshop to explore creations of devices, installations, or experiences that i
 
 The project has three main parts: Raspberry Pi, client, server
 
-- [client](./client/README.md)
-- [server](./server/README.md)
+- [client](/client/README.md)
+- [server](/server/README.md)
 
 ## Setup Raspberry Pi
 
