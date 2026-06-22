@@ -1,0 +1,10 @@
+services:
+  sharp:
+    build: .
+    container_name: sharp
+    mem_limit: 32g
+    shm_size: 8g
+    volumes:
+      - ./input:/data/input
+      - ./output:/data/output
+      - ./models:/models
