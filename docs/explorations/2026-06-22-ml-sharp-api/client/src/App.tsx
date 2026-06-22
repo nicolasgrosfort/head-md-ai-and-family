@@ -1,17 +1,22 @@
-import { PerspectiveCamera, PresentationControls } from "@react-three/drei";
+import { PerspectiveCamera } from "@react-three/drei";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { Suspense } from "react";
 import { PLYLoader } from "three/examples/jsm/Addons.js";
 import "./App.css";
+import { useFloatingPLY } from "./hooks/useFloatingPLY";
 
 function Model() {
-  const result = useLoader(PLYLoader, "/yiayia.ply");
+  const geometry = useLoader(PLYLoader, "/yiayia.ply");
+  const { ref, material } = useFloatingPLY(geometry, {
+    amplitude: { x: 0.05, y: 0.05, z: 0.05 },
+    speed: 0.025,
+    scale: 1.0,
+    appearDuration: 10.0,
+    appearScale: 500,
+    pointSize: 0.25,
+  });
 
-  return (
-    <points geometry={result}>
-      <pointsMaterial size={0.005} vertexColors />
-    </points>
-  );
+  return <points ref={ref} geometry={geometry} material={material.current} />;
 }
 
 function App() {
@@ -19,15 +24,9 @@ function App() {
     <main>
       <Suspense fallback={<p>Loading...</p>}>
         <Canvas>
+          <color attach="background" args={["#000000"]} />
           <PerspectiveCamera makeDefault position={[0, 0, 1]} fov={50} />
-          <PresentationControls
-            enabled
-            global
-            snap
-            polar={[-Math.PI / 2, Math.PI / 2]}
-          >
-            <Model />
-          </PresentationControls>
+          <Model />
         </Canvas>
       </Suspense>
     </main>
