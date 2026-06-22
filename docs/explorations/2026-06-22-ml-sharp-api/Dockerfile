@@ -19,8 +19,15 @@ RUN git clone https://github.com/apple/ml-sharp.git .
 # Install Torch CPU-only first to avoid using CUDA (~5GB)
 RUN pip install --no-cache-dir \
     torch torchvision --index-url https://download.pytorch.org/whl/cpu
-
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Install scripts dependencies
+RUN pip install --no-cache-dir plyfile
+
+# Copy scripts
+COPY scripts/convert.py /app/convert.py
+COPY scripts/decimate.py /app/decimate.py
+COPY scripts/rotate.py /app/rotate.py
 
 # Directories for data
 RUN mkdir -p /data/input /data/output

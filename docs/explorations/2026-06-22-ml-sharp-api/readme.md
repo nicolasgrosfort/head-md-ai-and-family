@@ -24,6 +24,6 @@
 make build
 
 # Convert and image to .ply
-make predict IMG=photo.jpg
+make predict IMG=yiayia.jpg RX=180 RATIO=1.0
 ```
 
