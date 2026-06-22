@@ -24,6 +24,6 @@
 make build
 
 # Convert and image to .ply
-make predict photo.jpg
+make predict IMG=photo.jpg
 ```
 
