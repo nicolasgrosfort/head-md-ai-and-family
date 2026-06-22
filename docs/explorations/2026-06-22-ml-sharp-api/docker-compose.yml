@@ -8,3 +8,16 @@ services:
       - ./input:/data/input
       - ./output:/data/output
       - ./models:/models
+
+  api:
+    build: .
+    container_name: sharp-api
+    mem_limit: 32g
+    shm_size: 8g
+    ports:
+      - "8000:8000" # accessible depuis l'extérieur de Docker
+    volumes:
+      - ./input:/data/input
+      - ./output:/data/output
+      - ./models:/models
+    entrypoint: ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]

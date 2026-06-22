@@ -22,12 +22,13 @@ RUN pip install --no-cache-dir \
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install scripts dependencies
-RUN pip install --no-cache-dir plyfile
+RUN pip install --no-cache-dir plyfile fastapi uvicorn[standard] python-multipart
 
 # Copy scripts
 COPY scripts/convert.py /app/convert.py
 COPY scripts/decimate.py /app/decimate.py
 COPY scripts/rotate.py /app/rotate.py
+COPY api/api.py /app/api.py
 
 # Directories for data
 RUN mkdir -p /data/input /data/output

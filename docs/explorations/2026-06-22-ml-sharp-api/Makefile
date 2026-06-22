@@ -2,6 +2,9 @@
 
 build:
 	docker compose build
+
+start-api:
+	docker compose up api
 	
 predict:
 	$(eval STEM := $(notdir $(basename $(IMG))))
