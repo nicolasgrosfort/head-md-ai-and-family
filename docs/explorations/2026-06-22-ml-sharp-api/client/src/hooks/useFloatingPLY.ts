@@ -10,6 +10,9 @@ const vertexShader = `
   uniform float uAppearScale;
   uniform vec3 uAmplitude;
   uniform float uPointSize;
+  uniform float uMinPointSize;
+  uniform float uMaxPointSize;
+  uniform float uDepthScale;
 
   attribute vec3 originalPosition;
 
@@ -84,8 +87,11 @@ const vertexShader = `
       snoise(vec3(pos.x, pos.y, pos.z + 200.0) + t) * uAmplitude.z
     );
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(displaced, 1.0);
-    gl_PointSize = uPointSize;
+    vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
+    gl_Position = projectionMatrix * mvPosition;
+    float depth = max(0.1, -mvPosition.z);
+    float size = uPointSize * (uDepthScale / depth);
+    gl_PointSize = clamp(size, uMinPointSize, uMaxPointSize);
   }
 `;
 
@@ -133,6 +139,9 @@ export function useFloatingPLY(
         uScale: { value: scale },
         uAppearScale: { value: appearScale },
         uPointSize: { value: pointSize },
+        uMinPointSize: { value: 0.5 },
+        uMaxPointSize: { value: 4.0 },
+        uDepthScale: { value: 1.0 },
         uAmplitude: {
           value: new THREE.Vector3(amplitude.x, amplitude.y, amplitude.z),
         },

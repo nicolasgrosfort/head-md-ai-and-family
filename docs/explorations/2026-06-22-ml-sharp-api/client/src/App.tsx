@@ -13,14 +13,14 @@ function Model({ url }: { url: string }) {
     scale: 1.0,
     appearDuration: 10.0,
     appearScale: 500,
-    pointSize: 2,
+    pointSize: 1,
   });
 
   return <points ref={ref} geometry={geometry} material={material.current} />;
 }
 
 function App() {
-  const [plyUrl, setPlyUrl] = useState<string | null>(null);
+  const [plyUrl, setPlyUrl] = useState<string | null>("/yiayia.ply");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,7 +80,7 @@ function App() {
       <Canvas style={{ width: "100vw", height: "100vh" }}>
         <color attach="background" args={["#000000"]} />
         <PerspectiveCamera makeDefault position={[0, 0, 1]} fov={50} />
-        <OrbitControls />
+        <OrbitControls minDistance={0.001} maxDistance={1} />
         <Suspense fallback={null}>{plyUrl && <Model url={plyUrl} />}</Suspense>
       </Canvas>
     </main>
