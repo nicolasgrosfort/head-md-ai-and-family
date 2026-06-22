@@ -13,7 +13,7 @@ function Model({ url }: { url: string }) {
     scale: 1.0,
     appearDuration: 10.0,
     appearScale: 500,
-    pointSize: 1,
+    pointSize: 2,
   });
 
   return <points ref={ref} geometry={geometry} material={material.current} />;
