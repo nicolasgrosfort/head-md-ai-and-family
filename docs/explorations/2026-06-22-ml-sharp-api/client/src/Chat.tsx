@@ -5,20 +5,22 @@ import {
   analyzeMemory,
   type MemoryAnalysis,
 } from "./helpers/memoryAnalysis.ts";
+import { generateModel } from "./helpers/modeler.ts";
 import { generatePrompt } from "./helpers/prompter.ts";
 
 const OLLAMA_URL = "http://localhost:11434/api/chat";
 
 export const Chat = ({
-  setImageUrl,
+  setModelUrl,
 }: {
-  setImageUrl: (url: string | null) => void;
+  setModelUrl: (url: string | null) => void;
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [analysis, setAnalysis] = useState<MemoryAnalysis | null>(null);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState<string | null>(null);
+  const [, setImageUrl] = useState<string | null>(null);
 
   const sendMessage = async ({
     isInitial = false,
@@ -58,8 +60,11 @@ export const Chat = ({
       const nextPrompt = await generatePrompt(nextUpdatedMessages);
       setPrompt(nextPrompt);
 
-      const url = await generateImage(nextPrompt);
-      setImageUrl(url);
+      const imageUrl = await generateImage(nextPrompt);
+      setImageUrl(imageUrl);
+
+      const modelUrl = await generateModel(imageUrl);
+      setModelUrl(modelUrl);
     }
 
     setLoading(false);
@@ -77,6 +82,21 @@ export const Chat = ({
   return (
     <div>
       <div>
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage({})}
+        />
+        <button onClick={() => sendMessage({})}>Envoyer</button>
+      </div>
+
+      <div>
+        {<MemoryScore score={analysis?.score || 0} />}
+        <pre>{JSON.stringify(analysis, null, 2)}</pre>
+        <pre>{prompt}</pre>
+      </div>
+
+      <div>
         {messages
           .filter((m) => m.role !== "system")
           .map((m, i) => (
@@ -84,17 +104,6 @@ export const Chat = ({
           ))}
         {loading && <p>...</p>}
       </div>
-
-      {<MemoryScore score={analysis?.score || 0} />}
-      <pre>{JSON.stringify(analysis, null, 2)}</pre>
-      <pre>{prompt}</pre>
-
-      <input
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && sendMessage({})}
-      />
-      <button onClick={() => sendMessage({})}>Envoyer</button>
     </div>
   );
 };

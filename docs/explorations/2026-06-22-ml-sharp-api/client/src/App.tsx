@@ -3,14 +3,14 @@ import { Chat } from "./Chat";
 import { Scene } from "./Scene";
 
 function App() {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [modelUrl, setModelUrl] = useState<string | null>(null);
 
   return (
     <main>
-      {imageUrl ? (
-        <Scene imageBase64={imageUrl} />
+      {modelUrl ? (
+        <Scene modelUrl={modelUrl} />
       ) : (
-        <Chat setImageUrl={setImageUrl} />
+        <Chat setModelUrl={setModelUrl} />
       )}
     </main>
   );
