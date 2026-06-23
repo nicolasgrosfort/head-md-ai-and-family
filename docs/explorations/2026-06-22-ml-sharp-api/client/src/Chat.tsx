@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { analysing, type Analysis } from "./helpers/analysit.ts";
 import { imagining } from "./helpers/imaginative.ts";
 import { interviewing, type Interview } from "./helpers/interviewer.ts";
 import { modeling } from "./helpers/modeler.ts";
 import { orchestrating } from "./helpers/orchestrator.ts";
 import { prompting } from "./helpers/prompter.ts";
+import { Whisper } from "./Whisper.tsx";
 
 export const OLLAMA_URL = "http://localhost:11434/api/chat";
 export const MEMORY_SCORE = 75;
@@ -18,8 +19,6 @@ export const Chat = ({
   setModelUrl: (url: string | null) => void;
   setShowModel: (show: boolean) => void;
 }) => {
-  const [input, setInput] = useState("");
-
   const [interview, setInterview] = useState<Interview[]>([]);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
 
@@ -29,82 +28,91 @@ export const Chat = ({
   const [, setPrompt] = useState<string | null>(null);
   const [, setImageUrl] = useState<string | null>(null);
 
-  const sendMessage = async ({
-    isInitial = false,
-  }: {
-    isInitial?: boolean;
-  }) => {
-    if (!isInitial && !input.trim()) return;
+  const sendMessage = useCallback(
+    async ({
+      isInitial = false,
+      transcribedText,
+    }: {
+      isInitial?: boolean;
+      transcribedText: string;
+    }) => {
+      if (!isInitial && !transcribedText.trim()) return;
 
-    setIsLoading(true);
+      const userMessage: Interview = { role: "user", content: transcribedText };
 
-    const userMessage: Interview = { role: "user", content: input };
-    setInput("");
-
-    if (modelUrl && !isInitial) {
-      const nextDecision = await orchestrating(input, interview);
-      console.log("Orchestrator decision:", nextDecision);
-      if (nextDecision.showModel) {
-        setShowModel(true);
-        return;
+      if (modelUrl && !isInitial) {
+        const nextDecision = await orchestrating(transcribedText, interview);
+        console.log("Orchestrator decision:", nextDecision);
+        if (nextDecision.showModel) {
+          setShowModel(true);
+          return;
+        }
       }
-    }
 
-    const updateInterview = [...interview, userMessage];
-    setInterview(updateInterview);
+      const updateInterview = [...interview, userMessage];
+      setInterview(updateInterview);
 
-    const nextAnalysis = await analysing(updateInterview);
-    setAnalysis(nextAnalysis);
+      const nextAnalysis = await analysing(updateInterview);
+      setAnalysis(nextAnalysis);
 
-    const nextInterview = await interviewing(
-      nextAnalysis,
-      updateInterview,
-      modelUrl,
-    );
-    const nextUpdatedInterview = [...updateInterview, nextInterview];
-    setInterview(nextUpdatedInterview);
+      const nextInterview = await interviewing(
+        nextAnalysis,
+        updateInterview,
+        modelUrl,
+      );
+      const nextUpdatedInterview = [...updateInterview, nextInterview];
+      setInterview(nextUpdatedInterview);
 
-    if (nextAnalysis.score >= MEMORY_SCORE && !isMemoryCollected) {
-      setIsMemoryCollected(true);
+      if (nextAnalysis.score >= MEMORY_SCORE && !isMemoryCollected) {
+        setIsMemoryCollected(true);
 
-      const nextPrompt = await prompting(nextUpdatedInterview);
-      setPrompt(nextPrompt);
+        const nextPrompt = await prompting(nextUpdatedInterview);
+        setPrompt(nextPrompt);
 
-      const imageUrl = await imagining(nextPrompt);
-      setImageUrl(imageUrl);
+        const imageUrl = await imagining(nextPrompt);
+        setImageUrl(imageUrl);
 
-      const modelUrl = await modeling(imageUrl);
-      setModelUrl(modelUrl);
-    }
+        const modelUrl = await modeling(imageUrl);
+        setModelUrl(modelUrl);
+      }
 
-    setIsLoading(false);
-  };
+      setIsLoading(false);
+    },
+    [interview, modelUrl, isMemoryCollected, setModelUrl, setShowModel],
+  );
 
   useEffect(() => {
     if (interview.length === 0) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      sendMessage({ isInitial: true });
+      sendMessage({ isInitial: true, transcribedText: "" });
       console.log("Initial message sent");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleRecordStart = useCallback(() => {
+    setIsLoading(true);
+  }, []);
+
+  const handleTranscribeEnd = useCallback(
+    (text: string) => {
+      console.log("Transcribed text:", text);
+
+      sendMessage({ transcribedText: text });
+    },
+    [sendMessage],
+  );
+
   return (
     <div>
       <div>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage({})}
+        <Whisper
+          onRecordStart={handleRecordStart}
+          onTranscribeEnd={handleTranscribeEnd}
         />
-        <button onClick={() => sendMessage({})}>Envoyer</button>
       </div>
 
-      <div>
-        {<MemoryScore score={analysis?.score || 0} />}
-        {/* <pre>{JSON.stringify(analysis, null, 2)}</pre>
-        <pre>{prompt}</pre> */}
-      </div>
+      <div>{<MemoryScore score={analysis?.score || 0} />}</div>
 
       <div>
         {interview

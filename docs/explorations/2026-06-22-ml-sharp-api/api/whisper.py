@@ -9,7 +9,7 @@ from faster_whisper import WhisperModel
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
-MODEL_SIZE = os.getenv("WHISPER_MODEL", "medium")
+MODEL_SIZE = os.getenv("WHISPER_MODEL", "small")
 DEVICE     = os.getenv("WHISPER_DEVICE", "cpu")       # "cuda" si GPU
 LANGUAGE   = os.getenv("WHISPER_LANG", None)          # None = auto-détect
 

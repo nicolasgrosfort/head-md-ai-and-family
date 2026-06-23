@@ -1,10 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useAudioRecorder } from "./hooks/useAudioRecorder";
 
-export const Whisper = () => {
+export const Whisper = ({
+  onTranscribeEnd,
+  onRecordStart,
+}: {
+  onTranscribeEnd: (text: string) => void;
+  onRecordStart?: () => void;
+}) => {
   const { isRecording, isReady, audioBlob, startRecording, stopRecording } =
     useAudioRecorder(240);
-  const [text, setText] = useState("");
+
+  const onTranscribeEndRef = useRef(onTranscribeEnd);
+  const lastAudioBlobRef = useRef<Blob | null>(null);
+
+  useEffect(() => {
+    onTranscribeEndRef.current = onTranscribeEnd;
+  }, [onTranscribeEnd]);
 
   useEffect(() => {
     fetch("http://localhost:8001/health")
@@ -12,28 +24,15 @@ export const Whisper = () => {
       .then(console.log);
   }, []);
 
-  //   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-  //     const file = e.target.files?.[0];
-  //     if (!file) return;
-
-  //     const form = new FormData();
-  //     form.append("file", file);
-
-  //     const res = await fetch("http://localhost:8001/transcribe", {
-  //       method: "POST",
-  //       body: form,
-  //     });
-  //     const data = await res.json();
-  //     setText(data.text);
-  //   }
-
   useEffect(() => {
     if (!audioBlob) return;
 
+    // évite de retraiter exactement le même blob
+    if (lastAudioBlobRef.current === audioBlob) return;
+    lastAudioBlobRef.current = audioBlob;
+
     const form = new FormData();
     form.append("file", audioBlob, "audio.mp4");
-
-    console.log("Sending audio blob to server:", audioBlob);
 
     fetch("http://localhost:8001/transcribe", {
       method: "POST",
@@ -41,7 +40,7 @@ export const Whisper = () => {
     })
       .then((r) => r.json())
       .then((data) => {
-        setText(data.text);
+        onTranscribeEndRef.current(data.text);
       });
   }, [audioBlob]);
 
@@ -51,19 +50,25 @@ export const Whisper = () => {
     <div
       tabIndex={0}
       onKeyDown={(e) => {
-        if (!isReady || e.repeat) return; // ← e.repeat évite les répétitions
-        if (e.key === " ") startRecording();
+        if (!isReady || e.repeat || isRecording) return;
+
+        if (e.key === " ") {
+          e.preventDefault();
+          onRecordStart?.();
+          startRecording();
+        }
       }}
       onKeyUp={(e) => {
-        if (!isReady) return;
-        if (e.key === " ") stopRecording();
+        if (!isReady || !isRecording) return;
+
+        if (e.key === " ") {
+          e.preventDefault();
+          stopRecording();
+        }
       }}
     >
-      <h1>Whisper</h1>
-      <p>Press "r" to start/stop recording</p>
-      <p>{isRecording ? "Recording..." : "Not recording"}</p>
-      {/* <input type="file" accept="audio/*" onChange={handleFile} /> */}
-      <p>{text}</p>
+      <p>Press "Space" to start/stop recording</p>
+      <p>{isRecording && "Recording..."}</p>
     </div>
   );
 };
