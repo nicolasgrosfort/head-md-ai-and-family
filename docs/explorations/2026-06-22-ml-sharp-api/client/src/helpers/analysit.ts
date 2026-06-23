@@ -17,52 +17,52 @@ const ANALYSIS_SCHEMA = {
 const SYSTEM_ANALYSTE = {
   role: "system",
   content: `
-Tu analyses une conversation entre un utilisateur et une IA.
+    Tu analyses une conversation entre un utilisateur et une IA.
 
-Ton objectif est d'évaluer si cette conversation contient suffisamment d'éléments concrets pour générer une image représentant un souvenir.
+    Ton objectif est d'évaluer si cette conversation contient suffisamment d'éléments concrets pour générer une image représentant un souvenir.
 
-Si la conversation est vide, presque vide, ou ne contient aucun souvenir identifiable, retourne obligatoirement un score de 0 et une liste d'éléments manquants.
+    Si la conversation est vide, presque vide, ou ne contient aucun souvenir identifiable, retourne obligatoirement un score de 0 et une liste d'éléments manquants.
 
-Tu dois estimer la "visualisabilité" du souvenir : est-ce qu'une scène claire peut être imaginée et transformée en image ?
+    Tu dois estimer la "visualisabilité" du souvenir : est-ce qu'une scène claire peut être imaginée et transformée en image ?
 
-Évalue notamment la présence ou l'absence de :
-- lieu ou environnement
-- moment ou époque
-- lumière
-- couleurs
-- personnages
-- objets importants
-- actions ou situation
-- ambiance émotionnelle
-- sons
-- odeurs
-- sensations physiques
-- détails sensoriels ou visuels distinctifs
+    Évalue notamment la présence ou l'absence de :
+    - lieu ou environnement
+    - moment ou époque
+    - lumière
+    - couleurs
+    - personnages
+    - objets importants
+    - actions ou situation
+    - ambiance émotionnelle
+    - sons
+    - odeurs
+    - sensations physiques
+    - détails sensoriels ou visuels distinctifs
 
-Attribue un score de 0 à 100 :
-- 0-24 : aucun souvenir identifiable ou aucune scène visuelle exploitable
-- 25-49 : souvenir très vague, avec très peu d'éléments concrets
-- 50-74 : scène partiellement identifiable, mais encore trop floue pour générer une image fidèle
-- 75-99 : scène assez claire, avec quelques éléments importants manquants
-- 100 : scène riche, précise et suffisamment complète pour générer une image cohérente
+    Attribue un score de 0 à 100 :
+    - 0-24 : aucun souvenir identifiable ou aucune scène visuelle exploitable
+    - 25-49 : souvenir très vague, avec très peu d'éléments concrets
+    - 50-74 : scène partiellement identifiable, mais encore trop floue pour générer une image fidèle
+    - 75-99 : scène assez claire, avec quelques éléments importants manquants
+    - 100 : scène riche, précise et suffisamment complète pour générer une image cohérente
 
-Le score ne doit pas simplement compter les catégories présentes. 
-Il doit refléter la capacité réelle à reconstruire une scène visuelle.
+    Le score ne doit pas simplement compter les catégories présentes. 
+    Il doit refléter la capacité réelle à reconstruire une scène visuelle.
 
-Retourne uniquement un JSON valide respectant ce format :
+    Retourne uniquement un JSON valide respectant ce format :
 
-{
-  "score": 0,
-  "missing": []
-}
+    {
+      "score": 0,
+      "missing": []
+    }
 
-Dans "missing", liste uniquement les éléments importants qui manquent pour améliorer la génération d'image.
-Si rien d'important ne manque, retourne un tableau vide.
+    Dans "missing", liste uniquement les éléments importants qui manquent pour améliorer la génération d'image.
+    Si rien d'important ne manque, retourne un tableau vide.
 
-Utilise les réponse de l'utilisateur pour identifier les éléments manquants et évaluer le score.
-Par exemple, si l'utilisateur mentionne un objet, tu dois lui poser des questions sur sa forme, sa couleur, son odeur, etc...
+    Utilise les réponse de l'utilisateur pour identifier les éléments manquants et évaluer le score.
+    Par exemple, si l'utilisateur mentionne un objet, tu dois lui poser des questions sur sa forme, sa couleur, son odeur, etc...
 
-Ne retourne aucun texte en dehors du JSON.
+    Ne retourne aucun texte en dehors du JSON.
 `,
 };
 

@@ -6,8 +6,23 @@ export type Interview = {
   content: string;
 };
 
-export const buildInterviewerSystem = (analysis: Analysis): Interview => {
+export const buildInterviewerSystem = (
+  analysis: Analysis,
+  modelUrl: string | null,
+): Interview => {
   const memoryCollected = analysis.score >= MEMORY_SCORE;
+
+  if (modelUrl) {
+    return {
+      role: "system",
+      content: `
+        La visualisation du souvenir de l'utilisateur est prête.
+        Annonce-le lui chaleureusement et demande-lui s'il souhaite la voir.
+        Pose lui une question fermée pour savoir s'il veut voir la visualisation exemple: "Souhaitez-vous voir la visualisation de votre souvenir ? (oui/non)".
+        Ne pose aucune autre question.
+      `,
+    };
+  }
 
   return {
     role: "system",
@@ -49,8 +64,9 @@ export const buildInterviewerSystem = (analysis: Analysis): Interview => {
 export const interviewing = async (
   analysis: Analysis,
   messages: Interview[],
+  modelUrl: string | null,
 ): Promise<Interview> => {
-  const systemPrompt = buildInterviewerSystem(analysis);
+  const systemPrompt = buildInterviewerSystem(analysis, modelUrl);
   const messagesWithSystem = [systemPrompt, ...messages];
 
   const res = await fetch(OLLAMA_URL, {
