@@ -46,18 +46,17 @@ pull-image-model:
 
 init-ml-sharp:
 	git clone https://github.com/apple/ml-sharp.git
+	brew install --cask miniconda
 	brew install python@3.13
-	cd ml-sharp && python3.13 -m venv .venv
-	cd ml-sharp && .venv/bin/pip install torch torchvision
-	cd ml-sharp && .venv/bin/pip install -r requirements.txt
-	cd ml-sharp && .venv/bin/pip install plyfile numpy fastapi uvicorn[standard] python-multipart
-
+	
+	cd ml-sharp && conda create -n sharp python=3.13 -y
+	cd ml-sharp && conda run -n sharp pip install -r requirements.txt
+	cd ml-sharp && conda run -n sharp pip install plyfile numpy fastapi uvicorn[standard] python-multipart
 	cp api/api.py ml-sharp/api.py
 	cp scripts/convert.py ml-sharp/convert.py
 	cp scripts/decimate.py ml-sharp/decimate.py
 	cp scripts/rotate.py ml-sharp/rotate.py
-
 	mkdir -p ml-sharp/input ml-sharp/output
 
 start-ml-sharp:
-	cd ml-sharp && .venv/bin/uvicorn api:app --host 0.0.0.0 --port 8000
+	cd ml-sharp && conda run -n sharp uvicorn api:app --host 0.0.0.0 --port 8000

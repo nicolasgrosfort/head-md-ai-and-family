@@ -1,6 +1,7 @@
 import subprocess
 import uuid
 import os
+import shutil
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException
@@ -9,8 +10,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 BASE_DIR = Path(os.path.dirname(__file__))
 
-SHARP_BIN = str(BASE_DIR / ".venv" / "bin" / "sharp")
-PYTHON_BIN = str(BASE_DIR / ".venv" / "bin" / "python")
+SHARP_BIN = shutil.which("sharp") or str(BASE_DIR / ".venv" / "bin" / "sharp")
+PYTHON_BIN = shutil.which("python") or str(BASE_DIR / ".venv" / "bin" / "python")
 CONVERT_PY = str(BASE_DIR / "convert.py")
 DECIMATE_PY = str(BASE_DIR / "decimate.py")
 ROTATE_PY = str(BASE_DIR / "rotate.py")
@@ -49,7 +50,6 @@ async def process(
     try:
         input_path.write_bytes(await file.read())
 
-        # 1. SHARP predict
         r = subprocess.run(
             [SHARP_BIN, "predict", "-i", str(input_path), "-o", str(OUTPUT_DIR)],
             capture_output=True, text=True,
@@ -57,7 +57,6 @@ async def process(
         if r.returncode != 0:
             raise HTTPException(500, f"SHARP error: {r.stderr}")
 
-        # 2. Conversion couleurs
         r = subprocess.run(
             [PYTHON_BIN, CONVERT_PY, str(raw_ply), str(tmp1)],
             capture_output=True, text=True,
@@ -65,7 +64,6 @@ async def process(
         if r.returncode != 0:
             raise HTTPException(500, f"Convert error: {r.stderr}")
 
-        # 3. Décimation
         r = subprocess.run(
             [PYTHON_BIN, DECIMATE_PY, str(tmp1), str(tmp2), "--ratio", str(ratio)],
             capture_output=True, text=True,
@@ -73,7 +71,6 @@ async def process(
         if r.returncode != 0:
             raise HTTPException(500, f"Decimate error: {r.stderr}")
 
-        # 4. Rotation
         r = subprocess.run(
             [PYTHON_BIN, ROTATE_PY, str(tmp2), "-o", str(tmp3),
              "-x", str(rx), "-y", str(ry), "-z", str(rz)],
