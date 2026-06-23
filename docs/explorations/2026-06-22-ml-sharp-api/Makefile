@@ -36,7 +36,10 @@ clean:
 	rm -rf ./output/*
 
 start-ollama:
-	docker compose up -d ollama
+	ollama serve
 
 pull-models:
-	docker compose exec ollama ollama pull llama3.2
+	ollama pull llama3.2
+
+pull-image-model:
+	ollama pull x/flux2-klein

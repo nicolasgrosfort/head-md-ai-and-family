@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { generateImage } from "./helpers/generateImage.ts";
 import {
   analyzeMemory,
   type MemoryAnalysis,
   type Message,
 } from "./helpers/memoryAnalysis.ts";
+import { generatePrompt } from "./helpers/prompter.ts";
 
 const OLLAMA_URL = "http://localhost:11434/api/chat";
 
@@ -38,6 +40,8 @@ export const Chat = () => {
   const [analysis, setAnalysis] = useState<MemoryAnalysis | null>(null);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [prompt, setPrompt] = useState<string | null>(null);
 
   const sendMessage = async ({
     isInitial = false,
@@ -70,7 +74,15 @@ export const Chat = () => {
     const data = await res.json();
     const reply: Message = data.message;
 
-    setMessages([...updatedMessages, reply]);
+    const nextUpdatedMessages = [...updatedMessages, reply];
+    setMessages(nextUpdatedMessages);
+    console.log("Updated messages:", nextUpdatedMessages);
+
+    const nextPrompt = await generatePrompt(nextUpdatedMessages);
+    setPrompt(nextPrompt);
+
+    console.log("Prompt generated:", nextPrompt);
+
     setLoading(false);
   };
 
@@ -103,6 +115,18 @@ export const Chat = () => {
         onKeyDown={(e) => e.key === "Enter" && sendMessage({})}
       />
       <button onClick={() => sendMessage({})}>Envoyer</button>
+
+      <button
+        disabled={!prompt}
+        onClick={async () => {
+          const url = await generateImage(prompt);
+          setImageUrl(url);
+        }}
+      >
+        Générer l'image
+      </button>
+      <pre>{prompt}</pre>
+      {imageUrl && <img src={imageUrl} alt="souvenir généré" />}
     </div>
   );
 };
