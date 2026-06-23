@@ -60,3 +60,13 @@ init-ml-sharp:
 
 start-ml-sharp:
 	cd ml-sharp && conda run -n sharp uvicorn api:app --host 0.0.0.0 --port 8000
+
+WHISPER_MODEL ?= medium
+WHISPER_PORT  ?= 8001
+
+init-whisper:
+	conda create -n whisper python=3.11 -y
+	conda run -n whisper pip install faster-whisper fastapi "uvicorn[standard]" python-multipart
+
+start-whisper:
+	conda run -n whisper uvicorn api.whisper:app --host 0.0.0.0 --port $(WHISPER_PORT) --reload
