@@ -1,9 +1,9 @@
-.PHONY: build predict help clean
+.PHONY: build predict help clean start-api start-ollama pull-models
 
 build:
 	docker compose build
 
-start-api:
+start-ml-sharp:
 	docker compose up api
 	
 predict:
@@ -34,3 +34,9 @@ help:
 
 clean:
 	rm -rf ./output/*
+
+start-ollama:
+	docker compose up -d ollama
+
+pull-models:
+	docker compose exec ollama ollama pull llama3.2

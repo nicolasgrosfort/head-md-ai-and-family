@@ -2,7 +2,6 @@ import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { Suspense, useCallback, useState } from "react";
 import { PLYLoader } from "three/examples/jsm/Addons.js";
-import "./App.css";
 import { useFloatingPLY } from "./hooks/useFloatingPLY";
 
 function Model({ url }: { url: string }) {

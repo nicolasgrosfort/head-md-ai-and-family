@@ -25,5 +25,9 @@ make build
 
 # Convert and image to .ply
 make predict IMG=yiayia.jpg RX=180 RATIO=1.0
+
+# Start API's
+make start-ml-sharp
+make start-ollama
 ```
 
