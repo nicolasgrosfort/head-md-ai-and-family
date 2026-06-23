@@ -43,13 +43,14 @@ Tu dois estimer la "visualisabilité" du souvenir : est-ce qu'une scène claire 
 - détails sensoriels ou visuels distinctifs
 
 Attribue un score de 0 à 100 :
-- 0 : aucun souvenir identifiable ou aucune scène visuelle exploitable
-- 25 : souvenir très vague, avec très peu d'éléments concrets
-- 50 : scène partiellement identifiable, mais encore trop floue pour générer une image fidèle
-- 75 : scène assez claire, avec quelques éléments importants manquants
+- 0-24 : aucun souvenir identifiable ou aucune scène visuelle exploitable
+- 25-49 : souvenir très vague, avec très peu d'éléments concrets
+- 50-74 : scène partiellement identifiable, mais encore trop floue pour générer une image fidèle
+- 75-99 : scène assez claire, avec quelques éléments importants manquants
 - 100 : scène riche, précise et suffisamment complète pour générer une image cohérente
 
-Le score ne doit pas simplement compter les catégories présentes. Il doit refléter la capacité réelle à reconstruire une scène visuelle.
+Le score ne doit pas simplement compter les catégories présentes. 
+Il doit refléter la capacité réelle à reconstruire une scène visuelle.
 
 Retourne uniquement un JSON valide respectant ce format :
 

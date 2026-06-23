@@ -30,7 +30,7 @@ const buildInterviewerSystem = (analysis: MemoryAnalysis): Message => ({
       : "") +
     `
       
-    Si le score est de 75% ou plus, tu peux dire à l'utilisateur que tu as assez d'informations pour générer une image, et lui demander s'il veut que tu le fasses.
+    Si le score est de 75 ou plus, tu peux dire à l'utilisateur que tu as assez d'informations pour générer une image, et lui demander s'il veut que tu le fasses.
     Voici le score : ${analysis.score}
     `,
 });
@@ -76,12 +76,11 @@ export const Chat = () => {
 
     const nextUpdatedMessages = [...updatedMessages, reply];
     setMessages(nextUpdatedMessages);
-    console.log("Updated messages:", nextUpdatedMessages);
 
-    const nextPrompt = await generatePrompt(nextUpdatedMessages);
-    setPrompt(nextPrompt);
-
-    console.log("Prompt generated:", nextPrompt);
+    if (nextAnalysis.score >= 75) {
+      const nextPrompt = await generatePrompt(nextUpdatedMessages);
+      setPrompt(nextPrompt);
+    }
 
     setLoading(false);
   };
@@ -117,7 +116,7 @@ export const Chat = () => {
       <button onClick={() => sendMessage({})}>Envoyer</button>
 
       <button
-        disabled={!prompt}
+        disabled={!prompt || !analysis || analysis.score < 75}
         onClick={async () => {
           const url = await generateImage(prompt);
           setImageUrl(url);
