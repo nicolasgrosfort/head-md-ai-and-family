@@ -20,11 +20,12 @@ export const Chat = ({
   setShowModel: (show: boolean) => void;
 }) => {
   const [interview, setInterview] = useState<Interview[]>([]);
-  const [analysis, setAnalysis] = useState<Analysis | null>(null);
 
+  const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isMemoryCollected, setIsMemoryCollected] = useState(false);
 
+  const [, setAnalysis] = useState<Analysis | null>(null);
   const [, setPrompt] = useState<string | null>(null);
   const [, setImageUrl] = useState<string | null>(null);
 
@@ -92,40 +93,58 @@ export const Chat = ({
 
   const handleRecordStart = useCallback(() => {
     setIsLoading(true);
+    setIsRecording(true);
   }, []);
 
   const handleTranscribeEnd = useCallback(
     (text: string) => {
       console.log("Transcribed text:", text);
-
       sendMessage({ transcribedText: text });
     },
     [sendMessage],
   );
 
+  const handleRecordEnd = useCallback(() => {
+    setIsRecording(false);
+  }, []);
+
+  const lastAssistantMessage = interview
+    .filter((m) => m.role === "assistant")
+    .at(-1);
+
   return (
-    <div>
+    <div style={{ maxWidth: "500px", fontSize: "2rem" }}>
       <div>
         <Whisper
           onRecordStart={handleRecordStart}
           onTranscribeEnd={handleTranscribeEnd}
+          onRecordEnd={handleRecordEnd}
         />
       </div>
 
-      <div>{<MemoryScore score={analysis?.score || 0} />}</div>
-
       <div>
-        {interview
-          .filter((m) => m.role !== "system")
-          .map((m, i) => (
-            <p key={i}>{m.content}</p>
-          ))}
-        {isLoading && <p>...</p>}
+        <p
+          style={{
+            fontSize: "1rem",
+            position: "absolute",
+            bottom: "20px",
+            left: "20px",
+          }}
+        >
+          {isRecording ? "Recording..." : isLoading ? "Loading..." : null}
+        </p>
+        <p
+          style={{
+            fontSize: "1rem",
+            position: "absolute",
+            bottom: "20px",
+            right: "20px",
+          }}
+        >
+          {isMemoryCollected && "Ready !"}
+        </p>
+        <p>{lastAssistantMessage?.content}</p>
       </div>
     </div>
   );
-};
-
-const MemoryScore = ({ score }: { score: number }) => {
-  return <progress value={score} max={100} />;
 };

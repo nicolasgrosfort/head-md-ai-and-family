@@ -4,8 +4,10 @@ import { useAudioRecorder } from "./hooks/useAudioRecorder";
 export const Whisper = ({
   onTranscribeEnd,
   onRecordStart,
+  onRecordEnd,
 }: {
   onTranscribeEnd: (text: string) => void;
+  onRecordEnd?: () => void;
   onRecordStart?: () => void;
 }) => {
   const { isRecording, isReady, audioBlob, startRecording, stopRecording } =
@@ -44,11 +46,21 @@ export const Whisper = ({
       });
   }, [audioBlob]);
 
-  if (!isReady) return <p>Loading...</p>;
+  if (!isReady) return null;
 
   return (
     <div
       tabIndex={0}
+      autoFocus
+      style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        top: 0,
+        width: "100dvw",
+        height: "100dvh",
+      }}
       onKeyDown={(e) => {
         if (!isReady || e.repeat || isRecording) return;
 
@@ -63,12 +75,10 @@ export const Whisper = ({
 
         if (e.key === " ") {
           e.preventDefault();
+          onRecordEnd?.();
           stopRecording();
         }
       }}
-    >
-      <p>Press "Space" to start/stop recording</p>
-      <p>{isRecording && "Recording..."}</p>
-    </div>
+    />
   );
 };

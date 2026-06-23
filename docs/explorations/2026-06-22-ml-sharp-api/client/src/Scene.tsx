@@ -1,4 +1,4 @@
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { PerspectiveCamera } from "@react-three/drei";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { Suspense } from "react";
 import { PLYLoader } from "three/examples/jsm/Addons.js";
@@ -8,8 +8,7 @@ export const Scene = ({ modelUrl }: { modelUrl?: string | null }) => {
   return (
     <Canvas style={{ width: "100vw", height: "100vh" }}>
       <color attach="background" args={["#000000"]} />
-      <PerspectiveCamera makeDefault position={[0, 0, 1]} fov={50} />
-      <OrbitControls minDistance={0.001} maxDistance={1} />
+      <PerspectiveCamera makeDefault position={[0, 0, 0]} fov={50} />
       <Suspense fallback={null}>
         {modelUrl && <Model url={modelUrl} />}
       </Suspense>
@@ -25,7 +24,7 @@ function Model({ url }: { url: string }) {
     scale: 1.0,
     appearDuration: 10.0,
     appearScale: 500,
-    pointSize: 1,
+    pointSize: 2,
   });
 
   return <points ref={ref} geometry={geometry} material={material.current} />;
