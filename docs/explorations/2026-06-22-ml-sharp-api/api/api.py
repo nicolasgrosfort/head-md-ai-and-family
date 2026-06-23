@@ -1,10 +1,25 @@
 import subprocess
 import uuid
+import os
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+
+BASE_DIR = Path(os.path.dirname(__file__))
+
+SHARP_BIN = str(BASE_DIR / ".venv" / "bin" / "sharp")
+PYTHON_BIN = str(BASE_DIR / ".venv" / "bin" / "python")
+CONVERT_PY = str(BASE_DIR / "convert.py")
+DECIMATE_PY = str(BASE_DIR / "decimate.py")
+ROTATE_PY = str(BASE_DIR / "rotate.py")
+
+INPUT_DIR = BASE_DIR / "input"
+OUTPUT_DIR = BASE_DIR / "output"
+
+INPUT_DIR.mkdir(exist_ok=True)
+OUTPUT_DIR.mkdir(exist_ok=True)
 
 app = FastAPI()
 
@@ -14,9 +29,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-INPUT_DIR = Path("/data/input")
-OUTPUT_DIR = Path("/data/output")
 
 
 @app.post("/process")
@@ -29,18 +41,17 @@ async def process(
 ):
     job_id = uuid.uuid4().hex
     input_path = INPUT_DIR / f"{job_id}.jpg"
-    raw_ply   = OUTPUT_DIR / f"{job_id}.ply"
-    tmp1      = OUTPUT_DIR / f"{job_id}_tmp1.ply"
-    tmp2      = OUTPUT_DIR / f"{job_id}_tmp2.ply"
-    tmp3      = OUTPUT_DIR / f"{job_id}_tmp3.ply"
+    raw_ply = OUTPUT_DIR / f"{job_id}.ply"
+    tmp1    = OUTPUT_DIR / f"{job_id}_tmp1.ply"
+    tmp2    = OUTPUT_DIR / f"{job_id}_tmp2.ply"
+    tmp3    = OUTPUT_DIR / f"{job_id}_tmp3.ply"
 
     try:
-        # Sauvegarder l'image
         input_path.write_bytes(await file.read())
 
         # 1. SHARP predict
         r = subprocess.run(
-            ["sharp", "predict", "-i", str(input_path), "-o", str(OUTPUT_DIR)],
+            [SHARP_BIN, "predict", "-i", str(input_path), "-o", str(OUTPUT_DIR)],
             capture_output=True, text=True,
         )
         if r.returncode != 0:
@@ -48,7 +59,7 @@ async def process(
 
         # 2. Conversion couleurs
         r = subprocess.run(
-            ["python", "/app/convert.py", str(raw_ply), str(tmp1)],
+            [PYTHON_BIN, CONVERT_PY, str(raw_ply), str(tmp1)],
             capture_output=True, text=True,
         )
         if r.returncode != 0:
@@ -56,7 +67,7 @@ async def process(
 
         # 3. Décimation
         r = subprocess.run(
-            ["python", "/app/decimate.py", str(tmp1), str(tmp2), "--ratio", str(ratio)],
+            [PYTHON_BIN, DECIMATE_PY, str(tmp1), str(tmp2), "--ratio", str(ratio)],
             capture_output=True, text=True,
         )
         if r.returncode != 0:
@@ -64,7 +75,7 @@ async def process(
 
         # 4. Rotation
         r = subprocess.run(
-            ["python", "/app/rotate.py", str(tmp2), "-o", str(tmp3),
+            [PYTHON_BIN, ROTATE_PY, str(tmp2), "-o", str(tmp3),
              "-x", str(rx), "-y", str(ry), "-z", str(rz)],
             capture_output=True, text=True,
         )
@@ -87,7 +98,6 @@ async def process(
         raw_ply.unlink(missing_ok=True)
         tmp1.unlink(missing_ok=True)
         tmp2.unlink(missing_ok=True)
-        # tmp3 nettoyé après envoi par FileResponse
 
 
 @app.get("/health")

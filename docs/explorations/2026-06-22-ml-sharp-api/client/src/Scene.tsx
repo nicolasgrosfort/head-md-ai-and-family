@@ -17,6 +17,7 @@ export const Scene = ({ imageBase64 }: { imageBase64?: string | null }) => {
     const run = async () => {
       setGenerating(true);
       setError(null);
+      console.log("Génération du modèle pour l'image :", imageBase64);
       const url = await generateModel(imageBase64);
       console.log("URL du modèle généré :", url);
       if (url) {
