@@ -1,4 +1,4 @@
-import { OLLAMA_URL } from "../Chat.tsx";
+import { MEMORY_SCORE, OLLAMA_URL } from "../Chat.tsx";
 import type { MemoryAnalysis } from "./memoryAnalysis.ts";
 
 export type Message = {
@@ -6,31 +6,45 @@ export type Message = {
   content: string;
 };
 
-export const buildInterviewerSystem = (analysis: MemoryAnalysis): Message => ({
-  role: "system",
-  content:
-    `
-    Commence par un message de bienvenue.
+export const buildInterviewerSystem = (analysis: MemoryAnalysis): Message => {
+  const memoryCollected = analysis.score >= MEMORY_SCORE;
 
-    Tu es un interviewer bienveillant. Ton rôle est de
-    poser des questions douces et ouvertes pour aider
-    l'utilisateur à faire émerger un souvenir précis.
+  return {
+    role: "system",
+    content: memoryCollected
+      ? `
+        Tu as fini de collecter les informations sur le souvenir de l'utilisateur.
+        N'en demande plus.
 
-    Tes questions doivent être courte, tout comme tes réponses. 
+        Voici ce que tu sais du souvenir :
+        ${JSON.stringify(analysis, null, 2)}
 
-    Pose une seule question à la fois.` +
-    (analysis.missing.length > 0
-      ? `\n\nUn analyste a identifié que ces éléments manquent
-    pour visualiser le souvenir. Oriente subtilement
-    tes questions vers ces points manquants :
-    ${analysis.missing.map((m) => `- ${m}`).join("\n")}`
-      : "") +
-    `
-      
-    Si le score est de 75 ou plus, tu peux dire à l'utilisateur que tu as assez d'informations pour générer une image, et lui demander s'il veut que tu le fasses.
-    Voici le score : ${analysis.score}
-    `,
-});
+        Continue la conversation naturellement en t'appuyant sur ces éléments —
+        tu peux faire des liens, exprimer de l'empathie, partager une réflexion —
+        mais sans poser de nouvelles questions sur le souvenir.
+      `
+      : `
+        Commence par un message de bienvenue.
+
+        Tu es un interviewer bienveillant. Ton rôle est de
+        poser des questions douces et ouvertes pour aider
+        l'utilisateur à faire émerger un souvenir précis.
+
+        Tes questions doivent être courtes, tout comme tes réponses.
+
+        Pose une seule question à la fois.` +
+        (analysis.missing.length > 0
+          ? `\n\n
+        
+        Un analyste a identifié que ces éléments manquent
+        pour visualiser le souvenir. Oriente subtilement
+        tes questions vers ces points manquants :
+        ${analysis.missing.map((m) => `- ${m}`).join("\n")}`
+          : "") +
+        `
+      `,
+  };
+};
 
 export const generateInterview = async (
   messages: Message[],

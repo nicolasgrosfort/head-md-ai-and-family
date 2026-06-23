@@ -13,6 +13,7 @@ import { generateModel } from "./helpers/modeler.ts";
 import { generatePrompt } from "./helpers/prompter.ts";
 
 export const OLLAMA_URL = "http://localhost:11434/api/chat";
+export const MEMORY_SCORE = 75;
 
 export const Chat = ({
   setModelUrl,
@@ -53,7 +54,7 @@ export const Chat = ({
     const nextUpdatedMessages = [...updatedMessages, reply];
     setMessages(nextUpdatedMessages);
 
-    if (nextAnalysis.score >= 75) {
+    if (nextAnalysis.score >= MEMORY_SCORE) {
       const nextPrompt = await generatePrompt(nextUpdatedMessages);
       setPrompt(nextPrompt);
 
