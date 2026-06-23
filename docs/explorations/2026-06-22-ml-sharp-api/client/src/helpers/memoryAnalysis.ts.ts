@@ -1,11 +1,8 @@
+import type { Message } from "./interviewer";
+
 export type MemoryAnalysis = {
   score: number;
   missing: string[];
-};
-
-export type Message = {
-  role: "user" | "assistant" | "system";
-  content: string;
 };
 
 const ANALYSIS_SCHEMA = {

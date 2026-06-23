@@ -139,7 +139,7 @@ export function useFloatingPLY(
         uScale: { value: scale },
         uAppearScale: { value: appearScale },
         uPointSize: { value: pointSize },
-        uMinPointSize: { value: 0.5 },
+        uMinPointSize: { value: 1.0 },
         uMaxPointSize: { value: 4.0 },
         uDepthScale: { value: 1.0 },
         uAmplitude: {

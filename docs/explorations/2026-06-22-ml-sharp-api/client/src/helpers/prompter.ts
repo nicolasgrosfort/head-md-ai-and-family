@@ -1,6 +1,6 @@
 // Génère un prompt pour l'API de génération d'image à partir d'un souvenir.
 
-import type { Message } from "./memoryAnalysis.ts";
+import type { Message } from "./interviewer";
 
 const PROMPTER_SYSTEM = {
   role: "system",
