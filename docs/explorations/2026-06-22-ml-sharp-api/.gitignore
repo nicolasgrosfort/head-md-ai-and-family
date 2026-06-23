@@ -1,3 +1,4 @@
 /output
 /models
 /ollama_models
+__pycache__
