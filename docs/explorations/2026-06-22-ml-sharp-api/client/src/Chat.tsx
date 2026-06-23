@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { generateImage } from "./helpers/generateImage.ts";
-import { buildInterviewerSystem, type Message } from "./helpers/interviewer.ts";
+import {
+  buildInterviewerSystem,
+  generateInterview,
+  type Message,
+} from "./helpers/interviewer.ts";
 import {
   analyzeMemory,
   type MemoryAnalysis,
@@ -8,18 +12,20 @@ import {
 import { generateModel } from "./helpers/modeler.ts";
 import { generatePrompt } from "./helpers/prompter.ts";
 
-const OLLAMA_URL = "http://localhost:11434/api/chat";
+export const OLLAMA_URL = "http://localhost:11434/api/chat";
 
 export const Chat = ({
   setModelUrl,
 }: {
   setModelUrl: (url: string | null) => void;
 }) => {
+  const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [analysis, setAnalysis] = useState<MemoryAnalysis | null>(null);
-  const [input, setInput] = useState("");
+
   const [loading, setLoading] = useState(false);
-  const [prompt, setPrompt] = useState<string | null>(null);
+
+  const [, setPrompt] = useState<string | null>(null);
   const [, setImageUrl] = useState<string | null>(null);
 
   const sendMessage = async ({
@@ -29,30 +35,21 @@ export const Chat = ({
   }) => {
     if (!isInitial && !input.trim()) return;
 
+    setLoading(true);
+
     const userMessage: Message = { role: "user", content: input };
+    setInput("");
+
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
-    setInput("");
-    setLoading(true);
 
     const nextAnalysis = await analyzeMemory(updatedMessages);
     setAnalysis(nextAnalysis);
 
     const systemPrompt = buildInterviewerSystem(nextAnalysis);
+    const messagesWithSystem = [systemPrompt, ...updatedMessages];
 
-    const res = await fetch(OLLAMA_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "llama3.2",
-        stream: false,
-        messages: [systemPrompt, ...updatedMessages],
-      }),
-    });
-
-    const data = await res.json();
-    const reply: Message = data.message;
-
+    const reply = await generateInterview(messagesWithSystem);
     const nextUpdatedMessages = [...updatedMessages, reply];
     setMessages(nextUpdatedMessages);
 
@@ -92,8 +89,8 @@ export const Chat = ({
 
       <div>
         {<MemoryScore score={analysis?.score || 0} />}
-        <pre>{JSON.stringify(analysis, null, 2)}</pre>
-        <pre>{prompt}</pre>
+        {/* <pre>{JSON.stringify(analysis, null, 2)}</pre>
+        <pre>{prompt}</pre> */}
       </div>
 
       <div>

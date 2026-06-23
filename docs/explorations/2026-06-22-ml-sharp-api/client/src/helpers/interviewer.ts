@@ -1,3 +1,4 @@
+import { OLLAMA_URL } from "../Chat.tsx";
 import type { MemoryAnalysis } from "./memoryAnalysis.ts";
 
 export type Message = {
@@ -30,3 +31,20 @@ export const buildInterviewerSystem = (analysis: MemoryAnalysis): Message => ({
     Voici le score : ${analysis.score}
     `,
 });
+
+export const generateInterview = async (
+  messages: Message[],
+): Promise<Message> => {
+  const res = await fetch(OLLAMA_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "llama3.2",
+      stream: false,
+      messages: messages,
+    }),
+  });
+
+  const data = await res.json();
+  return data.message;
+};
