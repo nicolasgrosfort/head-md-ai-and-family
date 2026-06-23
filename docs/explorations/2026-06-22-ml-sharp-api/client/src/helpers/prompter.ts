@@ -1,6 +1,6 @@
 // Génère un prompt pour l'API de génération d'image à partir d'un souvenir.
 
-import type { Message } from "./interviewer";
+import type { Interview } from "./interviewer";
 
 const PROMPTER_SYSTEM = {
   role: "system",
@@ -14,9 +14,7 @@ const PROMPTER_SYSTEM = {
   `,
 };
 
-export const generatePrompt = async (
-  conversation: Message[],
-): Promise<string> => {
+export const prompting = async (conversation: Interview[]): Promise<string> => {
   const res = await fetch("http://localhost:11434/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -1,6 +1,4 @@
-export const generateModel = async (
-  imageBase64: string,
-): Promise<string | null> => {
+export const modeling = async (imageBase64: string): Promise<string | null> => {
   try {
     // Convertir base64 → Blob → File
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");

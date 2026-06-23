@@ -1,12 +1,12 @@
 import { MEMORY_SCORE, OLLAMA_URL } from "../Chat.tsx";
-import type { MemoryAnalysis } from "./memoryAnalysis.ts";
+import type { Analysis } from "./analysit.ts";
 
-export type Message = {
+export type Interview = {
   role: "user" | "assistant" | "system";
   content: string;
 };
 
-export const buildInterviewerSystem = (analysis: MemoryAnalysis): Message => {
+export const buildInterviewerSystem = (analysis: Analysis): Interview => {
   const memoryCollected = analysis.score >= MEMORY_SCORE;
 
   return {
@@ -46,16 +46,20 @@ export const buildInterviewerSystem = (analysis: MemoryAnalysis): Message => {
   };
 };
 
-export const generateInterview = async (
-  messages: Message[],
-): Promise<Message> => {
+export const interviewing = async (
+  analysis: Analysis,
+  messages: Interview[],
+): Promise<Interview> => {
+  const systemPrompt = buildInterviewerSystem(analysis);
+  const messagesWithSystem = [systemPrompt, ...messages];
+
   const res = await fetch(OLLAMA_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "llama3.2",
       stream: false,
-      messages: messages,
+      messages: messagesWithSystem,
     }),
   });
 

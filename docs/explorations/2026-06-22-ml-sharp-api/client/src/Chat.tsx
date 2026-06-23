@@ -1,16 +1,9 @@
 import { useEffect, useState } from "react";
-import { generateImage } from "./helpers/generateImage.ts";
-import {
-  buildInterviewerSystem,
-  generateInterview,
-  type Message,
-} from "./helpers/interviewer.ts";
-import {
-  analyzeMemory,
-  type MemoryAnalysis,
-} from "./helpers/memoryAnalysis.ts";
-import { generateModel } from "./helpers/modeler.ts";
-import { generatePrompt } from "./helpers/prompter.ts";
+import { analysing, type Analysis } from "./helpers/analysit.ts";
+import { imagining } from "./helpers/imaginative.ts";
+import { interviewing, type Interview } from "./helpers/interviewer.ts";
+import { modeling } from "./helpers/modeler.ts";
+import { prompting } from "./helpers/prompter.ts";
 
 export const OLLAMA_URL = "http://localhost:11434/api/chat";
 export const MEMORY_SCORE = 75;
@@ -21,10 +14,11 @@ export const Chat = ({
   setModelUrl: (url: string | null) => void;
 }) => {
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [analysis, setAnalysis] = useState<MemoryAnalysis | null>(null);
 
-  const [loading, setLoading] = useState(false);
+  const [interview, setInterview] = useState<Interview[]>([]);
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [, setPrompt] = useState<string | null>(null);
   const [, setImageUrl] = useState<string | null>(null);
@@ -36,40 +30,37 @@ export const Chat = ({
   }) => {
     if (!isInitial && !input.trim()) return;
 
-    setLoading(true);
+    setIsLoading(true);
 
-    const userMessage: Message = { role: "user", content: input };
+    const userMessage: Interview = { role: "user", content: input };
     setInput("");
 
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
+    const updateInterview = [...interview, userMessage];
+    setInterview(updateInterview);
 
-    const nextAnalysis = await analyzeMemory(updatedMessages);
+    const nextAnalysis = await analysing(updateInterview);
     setAnalysis(nextAnalysis);
 
-    const systemPrompt = buildInterviewerSystem(nextAnalysis);
-    const messagesWithSystem = [systemPrompt, ...updatedMessages];
-
-    const reply = await generateInterview(messagesWithSystem);
-    const nextUpdatedMessages = [...updatedMessages, reply];
-    setMessages(nextUpdatedMessages);
+    const nextInterview = await interviewing(nextAnalysis, updateInterview);
+    const nextUpdatedInterview = [...updateInterview, nextInterview];
+    setInterview(nextUpdatedInterview);
 
     if (nextAnalysis.score >= MEMORY_SCORE) {
-      const nextPrompt = await generatePrompt(nextUpdatedMessages);
+      const nextPrompt = await prompting(nextUpdatedInterview);
       setPrompt(nextPrompt);
 
-      const imageUrl = await generateImage(nextPrompt);
+      const imageUrl = await imagining(nextPrompt);
       setImageUrl(imageUrl);
 
-      const modelUrl = await generateModel(imageUrl);
+      const modelUrl = await modeling(imageUrl);
       setModelUrl(modelUrl);
     }
 
-    setLoading(false);
+    setIsLoading(false);
   };
 
   useEffect(() => {
-    if (messages.length === 0) {
+    if (interview.length === 0) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       sendMessage({ isInitial: true });
       console.log("Initial message sent");
@@ -95,12 +86,12 @@ export const Chat = ({
       </div>
 
       <div>
-        {messages
+        {interview
           .filter((m) => m.role !== "system")
           .map((m, i) => (
             <p key={i}>{m.content}</p>
           ))}
-        {loading && <p>...</p>}
+        {isLoading && <p>...</p>}
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ const IMAGE_SYSTEM = {
 `,
 };
 
-export const generateImage = async (prompt: string | null): Promise<string> => {
+export const imagining = async (prompt: string | null): Promise<string> => {
   if (!prompt) return "";
 
   const res = await fetch("http://localhost:11434/api/generate", {

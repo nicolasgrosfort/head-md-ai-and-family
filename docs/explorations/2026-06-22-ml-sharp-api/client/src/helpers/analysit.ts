@@ -1,6 +1,6 @@
-import type { Message } from "./interviewer";
+import type { Interview } from "./interviewer";
 
-export type MemoryAnalysis = {
+export type Analysis = {
   score: number;
   missing: string[];
 };
@@ -66,9 +66,7 @@ Ne retourne aucun texte en dehors du JSON.
 `,
 };
 
-export const analyzeMemory = async (
-  messages: Message[],
-): Promise<MemoryAnalysis> => {
+export const analysing = async (interview: Interview[]): Promise<Analysis> => {
   const res = await fetch("http://localhost:11434/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -82,7 +80,7 @@ export const analyzeMemory = async (
           role: "user",
           content:
             `Voici la conversation :\n` +
-            messages
+            interview
               .filter((m) => m.role !== "system")
               .map((m) => `${m.role}: ${m.content}`)
               .join("\n"),
@@ -93,5 +91,5 @@ export const analyzeMemory = async (
 
   const data = await res.json();
 
-  return JSON.parse(data.message.content) as MemoryAnalysis;
+  return JSON.parse(data.message.content) as Analysis;
 };
