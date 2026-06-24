@@ -81,15 +81,6 @@ export const Chat = ({
     [interview, modelUrl, isMemoryCollected, setModelUrl, setShowModel],
   );
 
-  // useEffect(() => {
-  //   if (interview.length === 0) {
-  //     // eslint-disable-next-line react-hooks/set-state-in-effect
-  //     sendMessage({ isInitial: true, transcribedText: "" });
-  //     console.log("Initial message sent");
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
   const handleRecordStart = useCallback(() => {
     setIsLoading(true);
     setIsRecording(true);
@@ -97,7 +88,6 @@ export const Chat = ({
 
   const handleTranscribeEnd = useCallback(
     (text: string) => {
-      console.log("Transcribed text:", text);
       sendMessage({ transcribedText: text });
     },
     [sendMessage],

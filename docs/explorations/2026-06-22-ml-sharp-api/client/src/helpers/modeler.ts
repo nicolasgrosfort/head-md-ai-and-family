@@ -23,6 +23,7 @@ export const modeling = async (imageBase64: string): Promise<string | null> => {
     }
 
     const blob2 = await response.blob();
+    console.info("Modeling response:", blob2);
     return URL.createObjectURL(blob2);
   } catch (err) {
     console.error(err instanceof Error ? err.message : "Erreur inconnue");

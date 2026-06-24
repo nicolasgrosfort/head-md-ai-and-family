@@ -33,5 +33,6 @@ export const imagining = async (prompt: string | null): Promise<string> => {
     throw new Error("Ollama image response does not contain an image.");
   }
 
+  console.info("Image response:", data.image);
   return `data:image/png;base64,${data.image}`;
 };

@@ -42,6 +42,7 @@ export const Whisper = ({
     })
       .then((r) => r.json())
       .then((data) => {
+        console.info("Transcribed text:", data.text);
         onTranscribeEndRef.current(data.text);
       });
   }, [audioBlob]);

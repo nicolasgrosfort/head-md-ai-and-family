@@ -92,6 +92,9 @@ export const orchestrating = async (
   }
 
   const data = await res.json();
-
+  console.info(
+    "Orchestrator response:",
+    safeParseDecision(data.message.content),
+  );
   return safeParseDecision(data.message.content);
 };

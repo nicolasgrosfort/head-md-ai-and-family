@@ -183,5 +183,6 @@ export const interviewing = async (
   });
 
   const data = await res.json();
+  console.info("Interview response:", data.message);
   return data.message;
 };

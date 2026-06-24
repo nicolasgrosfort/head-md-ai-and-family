@@ -86,6 +86,6 @@ export const prompting = async (
   }
 
   const data = await res.json();
-
+  console.info("Prompt response:", data.message.content.trim());
   return data.message.content.trim();
 };
