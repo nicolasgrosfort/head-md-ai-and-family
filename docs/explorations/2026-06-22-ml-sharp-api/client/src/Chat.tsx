@@ -143,8 +143,12 @@ export const Chat = ({
           {isMemoryCollected && "Ready !"}
         </p>
         <p>
-          {lastAssistantMessage?.content ??
-            "Quel souvenir aimerais-tu revoir aujourd'hui ?"}
+          {lastAssistantMessage?.content ?? (
+            <>
+              Salut. <br />
+              Quel souvenir aimerais-tu revoir aujourd'hui ?
+            </>
+          )}
         </p>
       </div>
     </div>

@@ -131,9 +131,6 @@ est-ce qu'une scène claire peut être imaginée et transformée en image ?
 Analyse uniquement les messages de l'utilisateur.
 Ignore les suggestions de l'assistant.
 
-Si la conversation est vide, vague, abstraite, ou sans souvenir identifiable :
-retourne un score de 0.
-
 Champs à évaluer :
 - location : lieu ou environnement
 - time : moment, époque, saison ou temporalité
@@ -149,8 +146,6 @@ Champs à évaluer :
 - body : posture, sensation corporelle, point de vue
 - object : objet ou détail important
 
-score :
-Score global de visualisabilité, de 0 à 100.
 
 completion :
 Complétion descriptive du souvenir, de 0 à 100.
@@ -174,7 +169,7 @@ visual_summary :
 Résumé visuel très court du souvenir.
 Si le souvenir est insuffisant, retourne une chaîne vide.
 
-Barème score :
+Barème completion :
 0-24 : aucun souvenir identifiable ou scène inutilisable
 25-49 : souvenir très vague
 50-74 : scène partielle mais encore floue
