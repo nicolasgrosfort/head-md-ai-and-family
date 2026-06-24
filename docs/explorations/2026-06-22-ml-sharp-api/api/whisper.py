@@ -9,9 +9,9 @@ from faster_whisper import WhisperModel
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
-MODEL_SIZE = os.getenv("WHISPER_MODEL", "small")
+MODEL_SIZE = os.getenv("WHISPER_MODEL", "large-v3")
 DEVICE     = os.getenv("WHISPER_DEVICE", "cpu")       # "cuda" si GPU
-LANGUAGE   = os.getenv("WHISPER_LANG", None)          # None = auto-détect
+LANGUAGE   = os.getenv("WHISPER_LANG", 'fr')          # None = auto-détect
 
 # ── Lifespan (charge le modèle une seule fois au démarrage) ───────────────────
 
@@ -21,7 +21,8 @@ model: WhisperModel | None = None
 async def lifespan(app: FastAPI):
     global model
     print(f"⏳ Chargement du modèle Whisper '{MODEL_SIZE}' sur {DEVICE}...")
-    model = WhisperModel(MODEL_SIZE, device=DEVICE, compute_type="int8")
+    COMPUTE_TYPE = os.getenv("WHISPER_COMPUTE", "int8") 
+    model = WhisperModel(MODEL_SIZE, device=DEVICE, compute_type=COMPUTE_TYPE)
     print("✔ Modèle prêt")
     yield
     model = None

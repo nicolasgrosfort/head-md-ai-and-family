@@ -1,11 +1,5 @@
 .PHONY: build predict help clean start-api start-ollama pull-models
 
-build:
-	docker compose build
-
-start-ml-sharp:
-	docker compose up api
-	
 predict:
 	$(eval STEM := $(notdir $(basename $(IMG))))
 	$(eval RATIO := $(or $(RATIO),1))
@@ -38,10 +32,9 @@ clean:
 start-ollama:
 	ollama serve
 
-pull-models:
-	ollama pull llama3.2
-
-pull-image-model:
+init-ollama:
+	ollama pull gemma4:26b-mlx
+	ollama pull gemma4:12b-mlx
 	ollama pull x/flux2-klein
 
 init-ml-sharp:
@@ -61,12 +54,19 @@ init-ml-sharp:
 start-ml-sharp:
 	cd ml-sharp && conda run -n sharp uvicorn api:app --host 0.0.0.0 --port 8000
 
-WHISPER_MODEL ?= small
+WHISPER_MODEL ?= large-v3
 WHISPER_PORT  ?= 8001
+WHISPER_LANG ?= fr
+WHISPER_COMPUTE ?= int8
+WHISPER_DEVICE ?= cpu
 
 init-whisper:
 	conda create -n whisper python=3.11 -y
 	conda run -n whisper pip install faster-whisper fastapi "uvicorn[standard]" python-multipart
 
 start-whisper:
+	WHISPER_MODEL=$(WHISPER_MODEL) \
+	WHISPER_DEVICE=$(WHISPER_DEVICE) \
+	WHISPER_COMPUTE=$(WHISPER_COMPUTE) \
+	WHISPER_LANG=$(WHISPER_LANG) \
 	conda run -n whisper uvicorn api.whisper:app --host 0.0.0.0 --port $(WHISPER_PORT) --reload

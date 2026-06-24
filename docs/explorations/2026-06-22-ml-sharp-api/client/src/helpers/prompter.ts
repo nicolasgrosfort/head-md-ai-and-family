@@ -1,6 +1,8 @@
 import type { Analysis } from "./analysit";
 import type { Interview } from "./interviewer";
 
+const MODEL = "gemma4:26b-mlx";
+
 const PROMPTER_SYSTEM = {
   role: "system" as const,
   content: `
@@ -59,8 +61,9 @@ export const prompting = async (
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "llama3.2",
+      model: MODEL,
       stream: false,
+      think: false,
       messages: [
         PROMPTER_SYSTEM,
         {

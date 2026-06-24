@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { analysing, type Analysis } from "./helpers/analysit.ts";
 import { imagining } from "./helpers/imaginative.ts";
 import { interviewing, type Interview } from "./helpers/interviewer.ts";
@@ -19,13 +19,15 @@ export const Chat = ({
   setModelUrl: (url: string | null) => void;
   setShowModel: (show: boolean) => void;
 }) => {
+  const initialized = useRef(false);
+
   const [interview, setInterview] = useState<Interview[]>([]);
 
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isMemoryCollected, setIsMemoryCollected] = useState(false);
 
-  const [, setAnalysis] = useState<Analysis | null>(null);
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [, setPrompt] = useState<string | null>(null);
   const [, setImageUrl] = useState<string | null>(null);
 
@@ -37,7 +39,9 @@ export const Chat = ({
       isInitial?: boolean;
       transcribedText: string;
     }) => {
-      if (!isInitial && !transcribedText.trim()) return;
+      if (!isInitial && !transcribedText?.trim()) return;
+
+      console.info("States", { modelUrl }, { isMemoryCollected });
 
       const userMessage: Interview = { role: "user", content: transcribedText };
 
@@ -52,7 +56,7 @@ export const Chat = ({
       const updateInterview = [...interview, userMessage];
       setInterview(updateInterview);
 
-      const nextAnalysis = await analysing(updateInterview);
+      const nextAnalysis = await analysing(updateInterview, analysis);
       setAnalysis(nextAnalysis);
 
       const nextInterview = await interviewing(
@@ -80,6 +84,12 @@ export const Chat = ({
     },
     [interview, modelUrl, isMemoryCollected, setModelUrl, setShowModel],
   );
+
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    sendMessage({ isInitial: true, transcribedText: "" });
+  });
 
   const handleRecordStart = useCallback(() => {
     setIsLoading(true);
@@ -120,7 +130,7 @@ export const Chat = ({
             left: "20px",
           }}
         >
-          {isRecording ? "Recording..." : isLoading ? "Loading..." : null}
+          {isRecording ? "🔴" : isLoading ? "⏳" : null}
         </p>
         <p
           style={{
@@ -130,16 +140,10 @@ export const Chat = ({
             right: "20px",
           }}
         >
-          {isMemoryCollected && "Ready !"}
+          {isMemoryCollected && "📝"}
+          {modelUrl && "🤖"}
         </p>
-        <p>
-          {lastAssistantMessage?.content ?? (
-            <>
-              Salut. <br />
-              Quel souvenir aimerais-tu revoir aujourd'hui ?
-            </>
-          )}
-        </p>
+        <p>{lastAssistantMessage?.content}</p>
       </div>
     </div>
   );

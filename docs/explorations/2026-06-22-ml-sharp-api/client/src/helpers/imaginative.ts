@@ -1,3 +1,5 @@
+const MODEL = "x/flux2-klein";
+
 const IMAGE_SYSTEM = `
 Photorealistic dreamlike memory, nostalgic and emotionally intense.
 Vivid saturated colors, deep contrast, strong directional light, cinematic shadows.
@@ -17,7 +19,7 @@ export const imagining = async (prompt: string | null): Promise<string> => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "x/flux2-klein",
+      model: MODEL,
       prompt: fullPrompt,
       stream: false,
     }),
