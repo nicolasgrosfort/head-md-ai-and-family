@@ -1,72 +1,241 @@
 import type { Interview } from "./interviewer";
 
+export type MemoryKnown = {
+  location: boolean;
+  time: boolean;
+  people: boolean;
+  action: boolean;
+  emotion: boolean;
+  light: boolean;
+  colors: boolean;
+  sound: boolean;
+  smell: boolean;
+  temperature: boolean;
+  texture: boolean;
+  body: boolean;
+  object: boolean;
+};
+
 export type Analysis = {
-  score: number;
+  completion: number;
+  retrieval_strength: number;
+  strongest_anchor: string | null;
+  known: MemoryKnown;
   missing: string[];
+  visual_summary: string;
 };
 
 const ANALYSIS_SCHEMA = {
   type: "object",
   properties: {
-    score: { type: "number", minimum: 0, maximum: 100 },
-    missing: { type: "array", items: { type: "string" } },
+    completion: { type: "number", minimum: 0, maximum: 100 },
+    retrieval_strength: { type: "number", minimum: 0, maximum: 100 },
+    strongest_anchor: { type: ["string", "null"] },
+    known: {
+      type: "object",
+      properties: {
+        location: { type: "boolean" },
+        time: { type: "boolean" },
+        people: { type: "boolean" },
+        action: { type: "boolean" },
+        emotion: { type: "boolean" },
+        light: { type: "boolean" },
+        colors: { type: "boolean" },
+        sound: { type: "boolean" },
+        smell: { type: "boolean" },
+        temperature: { type: "boolean" },
+        texture: { type: "boolean" },
+        body: { type: "boolean" },
+        object: { type: "boolean" },
+      },
+      required: [
+        "location",
+        "time",
+        "people",
+        "action",
+        "emotion",
+        "light",
+        "colors",
+        "sound",
+        "smell",
+        "temperature",
+        "texture",
+        "body",
+        "object",
+      ],
+    },
+    missing: {
+      type: "array",
+      items: { type: "string" },
+    },
+    visual_summary: { type: "string" },
   },
-  required: ["score", "missing"],
+  required: [
+    "completion",
+    "retrieval_strength",
+    "strongest_anchor",
+    "known",
+    "missing",
+    "visual_summary",
+  ],
+};
+
+const EMPTY_KNOWN: MemoryKnown = {
+  location: false,
+  time: false,
+  people: false,
+  action: false,
+  emotion: false,
+  light: false,
+  colors: false,
+  sound: false,
+  smell: false,
+  temperature: false,
+  texture: false,
+  body: false,
+  object: false,
+};
+
+const EMPTY_ANALYSIS: Analysis = {
+  completion: 0,
+  retrieval_strength: 0,
+  strongest_anchor: null,
+  known: EMPTY_KNOWN,
+  missing: [
+    "lieu",
+    "moment",
+    "personnes",
+    "action",
+    "lumière",
+    "ambiance",
+    "détails sensoriels",
+  ],
+  visual_summary: "",
 };
 
 const SYSTEM_ANALYSTE = {
-  role: "system",
+  role: "system" as const,
   content: `
-    Tu analyses une conversation entre un utilisateur et une IA.
+Tu es un modèle d'analyse mémorielle.
 
-    Ton objectif est d'évaluer si cette conversation contient suffisamment d'éléments concrets pour générer une image représentant un souvenir.
+Tu analyses une conversation entre un utilisateur et une IA.
+Ton rôle est d'évaluer si le souvenir décrit est assez clair pour générer une image.
 
-    Si la conversation est vide, presque vide, ou ne contient aucun souvenir identifiable, retourne obligatoirement un score de 0 et une liste d'éléments manquants.
+Tu ne poses jamais de questions.
+Tu ne réponds jamais à l'utilisateur.
+Tu retournes uniquement un JSON valide.
 
-    Tu dois estimer la "visualisabilité" du souvenir : est-ce qu'une scène claire peut être imaginée et transformée en image ?
+Évalue la visualisabilité du souvenir :
+est-ce qu'une scène claire peut être imaginée et transformée en image ?
 
-    Évalue notamment la présence ou l'absence de :
-    - lieu ou environnement
-    - moment ou époque
-    - lumière
-    - couleurs
-    - personnages
-    - objets importants
-    - actions ou situation
-    - ambiance émotionnelle
-    - sons
-    - odeurs
-    - sensations physiques
-    - détails sensoriels ou visuels distinctifs
+Analyse uniquement les messages de l'utilisateur.
+Ignore les suggestions de l'assistant.
 
-    Attribue un score de 0 à 100 :
-    - 0-24 : aucun souvenir identifiable ou aucune scène visuelle exploitable
-    - 25-49 : souvenir très vague, avec très peu d'éléments concrets
-    - 50-74 : scène partiellement identifiable, mais encore trop floue pour générer une image fidèle
-    - 75-99 : scène assez claire, avec quelques éléments importants manquants
-    - 100 : scène riche, précise et suffisamment complète pour générer une image cohérente
+Si la conversation est vide, vague, abstraite, ou sans souvenir identifiable :
+retourne un score de 0.
 
-    Le score ne doit pas simplement compter les catégories présentes. 
-    Il doit refléter la capacité réelle à reconstruire une scène visuelle.
+Champs à évaluer :
+- location : lieu ou environnement
+- time : moment, époque, saison ou temporalité
+- people : personnes présentes
+- action : situation ou action
+- emotion : ambiance émotionnelle
+- light : lumière
+- colors : couleurs
+- sound : sons
+- smell : odeurs
+- temperature : température
+- texture : matières ou textures
+- body : posture, sensation corporelle, point de vue
+- object : objet ou détail important
 
-    Retourne uniquement un JSON valide respectant ce format :
+score :
+Score global de visualisabilité, de 0 à 100.
 
-    {
-      "score": 0,
-      "missing": []
-    }
+completion :
+Complétion descriptive du souvenir, de 0 à 100.
 
-    Dans "missing", liste uniquement les éléments importants qui manquent pour améliorer la génération d'image.
-    Si rien d'important ne manque, retourne un tableau vide.
+retrieval_strength :
+Force subjective du souvenir, de 0 à 100.
+Un souvenir peut être peu complet mais très vivant.
+Évalue la vivacité, la précision ressentie, la présence émotionnelle.
 
-    Utilise les réponse de l'utilisateur pour identifier les éléments manquants et évaluer le score.
-    Par exemple, si l'utilisateur mentionne un objet, tu dois lui poser des questions sur sa forme, sa couleur, son odeur, etc...
+strongest_anchor :
+L'élément le plus fort du souvenir.
+Exemples : "la grand-mère", "la cuisine", "l'odeur du bois", "la lumière du soir".
+Si aucun ancrage clair : null.
 
-    Ne retourne aucun texte en dehors du JSON.
-`,
+missing :
+Liste courte des éléments les plus utiles à demander ensuite.
+Maximum 4 éléments.
+N'inclus que les éléments importants.
+
+visual_summary :
+Résumé visuel très court du souvenir.
+Si le souvenir est insuffisant, retourne une chaîne vide.
+
+Barème score :
+0-24 : aucun souvenir identifiable ou scène inutilisable
+25-49 : souvenir très vague
+50-74 : scène partielle mais encore floue
+75-99 : scène claire avec quelques détails manquants
+100 : scène riche, précise, générable
+
+Retourne uniquement ce JSON :
+
+{
+  "completion": 0,
+  "retrieval_strength": 0,
+  "strongest_anchor": null,
+  "known": {
+    "location": false,
+    "time": false,
+    "people": false,
+    "action": false,
+    "emotion": false,
+    "light": false,
+    "colors": false,
+    "sound": false,
+    "smell": false,
+    "temperature": false,
+    "texture": false,
+    "body": false,
+    "object": false
+  },
+  "missing": [],
+  "visual_summary": ""
+}
+`.trim(),
+};
+
+const safeParseAnalysis = (content: string): Analysis => {
+  try {
+    const parsed = JSON.parse(content) as Analysis;
+
+    return {
+      ...EMPTY_ANALYSIS,
+      ...parsed,
+      known: {
+        ...EMPTY_KNOWN,
+        ...(parsed.known ?? {}),
+      },
+      missing: Array.isArray(parsed.missing) ? parsed.missing : [],
+    };
+  } catch {
+    return EMPTY_ANALYSIS;
+  }
 };
 
 export const analysing = async (interview: Interview[]): Promise<Analysis> => {
+  const conversation = interview
+    .filter((m) => m.role !== "system")
+    .map((m) => `${m.role}: ${m.content}`)
+    .join("\n");
+
+  if (!conversation.trim()) {
+    return EMPTY_ANALYSIS;
+  }
+
   const res = await fetch("http://localhost:11434/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -78,18 +247,17 @@ export const analysing = async (interview: Interview[]): Promise<Analysis> => {
         SYSTEM_ANALYSTE,
         {
           role: "user",
-          content:
-            `Voici la conversation :\n` +
-            interview
-              .filter((m) => m.role !== "system")
-              .map((m) => `${m.role}: ${m.content}`)
-              .join("\n"),
+          content: `Voici la conversation :\n${conversation}`,
         },
       ],
     }),
   });
 
+  if (!res.ok) {
+    throw new Error(`Ollama analysis error: ${res.status} ${res.statusText}`);
+  }
+
   const data = await res.json();
 
-  return JSON.parse(data.message.content) as Analysis;
+  return safeParseAnalysis(data.message.content);
 };

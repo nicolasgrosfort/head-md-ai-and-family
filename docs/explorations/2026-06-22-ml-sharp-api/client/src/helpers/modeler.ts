@@ -1,6 +1,5 @@
 export const modeling = async (imageBase64: string): Promise<string | null> => {
   try {
-    // Convertir base64 → Blob → File
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
     const byteArray = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
     const blob = new Blob([byteArray], { type: "image/png" });
