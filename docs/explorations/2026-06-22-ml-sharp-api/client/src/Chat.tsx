@@ -82,7 +82,14 @@ export const Chat = ({
 
       setIsLoading(false);
     },
-    [interview, modelUrl, isMemoryCollected, setModelUrl, setShowModel],
+    [
+      interview,
+      modelUrl,
+      isMemoryCollected,
+      setModelUrl,
+      setShowModel,
+      analysis,
+    ],
   );
 
   useEffect(() => {
@@ -112,7 +119,14 @@ export const Chat = ({
     .at(-1);
 
   return (
-    <div style={{ maxWidth: "500px", fontSize: "2rem" }}>
+    <div
+      style={{
+        maxWidth: "500px",
+        fontSize: "1.8rem",
+        textAlign: "center",
+        fontFamily: "monospace",
+      }}
+    >
       <div>
         <Whisper
           onRecordStart={handleRecordStart}

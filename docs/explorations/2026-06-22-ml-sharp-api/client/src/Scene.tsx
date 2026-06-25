@@ -6,9 +6,9 @@ import { useFloatingPLY } from "./hooks/useFloatingPLY";
 
 export const Scene = ({ modelUrl }: { modelUrl?: string | null }) => {
   return (
-    <Canvas style={{ width: "100vw", height: "100vh" }}>
+    <Canvas>
       <color attach="background" args={["#000000"]} />
-      <PerspectiveCamera makeDefault position={[0, 0, 0]} fov={50} />
+      <PerspectiveCamera makeDefault position={[0, 0, 1]} fov={50} />
       <Suspense fallback={null}>
         {modelUrl && <Model url={modelUrl} />}
       </Suspense>
@@ -24,7 +24,7 @@ function Model({ url }: { url: string }) {
     scale: 1.0,
     appearDuration: 10.0,
     appearScale: 500,
-    pointSize: 2,
+    pointSize: 1,
   });
 
   return <points ref={ref} geometry={geometry} material={material.current} />;

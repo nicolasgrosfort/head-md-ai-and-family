@@ -7,7 +7,15 @@ function App() {
   const [showModel, setShowModel] = useState(false);
 
   return (
-    <main>
+    <main
+      style={{
+        width: "600px",
+        height: "600px",
+        borderRadius: "300px",
+        overflow: "hidden",
+        border: "2px solid #444",
+      }}
+    >
       {showModel ? (
         <Scene modelUrl={modelUrl} />
       ) : (

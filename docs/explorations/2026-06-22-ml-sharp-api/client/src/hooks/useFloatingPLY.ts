@@ -139,8 +139,8 @@ export function useFloatingPLY(
         uScale: { value: scale },
         uAppearScale: { value: appearScale },
         uPointSize: { value: pointSize },
-        uMinPointSize: { value: 3.0 },
-        uMaxPointSize: { value: 6.0 },
+        uMinPointSize: { value: 2.0 },
+        uMaxPointSize: { value: 4.0 },
         uDepthScale: { value: 1.0 },
         uAmplitude: {
           value: new THREE.Vector3(amplitude.x, amplitude.y, amplitude.z),
