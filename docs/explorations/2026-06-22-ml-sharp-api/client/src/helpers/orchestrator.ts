@@ -1,6 +1,5 @@
+import { MODEL } from "../config";
 import type { Interview } from "./interviewer";
-
-const MODEL = "gemma4:12b-mlx";
 
 export type Decision = {
   showModel: boolean;
@@ -65,7 +64,7 @@ export const orchestrating = async (
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: MODEL,
+      model: MODEL.LLM,
       stream: false,
       think: false,
       format: DECISION_SCHEMA,

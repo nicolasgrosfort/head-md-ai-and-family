@@ -1,12 +1,11 @@
 import { MEMORY_COMPLETION, OLLAMA_URL } from "../Chat.tsx";
+import { MODEL } from "../config.ts";
 import type { Analysis } from "./analysit.ts";
 
 export type Interview = {
   role: "user" | "assistant" | "system";
   content: string;
 };
-
-const MODEL = "gemma4:26b-mlx";
 
 export const buildInterviewerSystem = (
   analysis: Analysis,
@@ -212,7 +211,7 @@ export const interviewing = async (
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: MODEL,
+      model: MODEL.LLM,
       stream: false,
       think: false,
       messages: messagesWithSystem,

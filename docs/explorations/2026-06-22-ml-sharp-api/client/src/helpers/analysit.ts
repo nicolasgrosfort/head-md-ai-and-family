@@ -1,8 +1,7 @@
 import ollama from "ollama/browser";
 import { z } from "zod";
+import { MODEL } from "../config";
 import type { Interview } from "./interviewer";
-
-const MODEL = "gemma4:12b-mlx";
 
 const DomainSchema = z.object({
   location: z.string().optional(),
@@ -47,7 +46,6 @@ const buildAnalysisSystem = (
     # TON ROLE
 
     Tu es un modèle d'analyse mémorielle.
-
     Tu analyses une conversation entre un utilisateur et une IA.
     Ton rôle est d'évaluer si le souvenir décrit est assez clair pour générer une image.
 
@@ -124,7 +122,7 @@ export const analysing = async (
   }
 
   const data = await ollama.chat({
-    model: MODEL,
+    model: MODEL.LLM,
     stream: false,
     think: false,
     format: z.toJSONSchema(AnalysisSchema),

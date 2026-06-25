@@ -1,28 +1,28 @@
+import { MODEL } from "../config";
 import type { Analysis } from "./analysit";
 import type { Interview } from "./interviewer";
-
-const MODEL = "gemma4:26b-mlx";
 
 const PROMPTER_SYSTEM = {
   role: "system" as const,
   content: `
+    # YOUR ROLE  
+    
     You are an image prompt writer.
-
     You generate a concise English prompt for an image generation model.
-
     The image must represent a personal memory described by the user.
+    She must stage the described object, placing the object at the center of the composition.
 
-    STYLE RULES
-
+    # STYLE RULES
+    
     - photorealistic
     - dreamlike memory
     - vivid saturated colors
     - strong directional light
     - cinematic shadows
     - nostalgic but intense
-    - vertical portrait composition, 9:16
+    - square format 1:1
 
-    FACE RULES
+    # FACE RULES
 
     If humans are present:
     - do not show clear facial features
@@ -33,14 +33,14 @@ const PROMPTER_SYSTEM = {
     - do not make it monstrous
     - make the absence of features feel poetic and memory-like
 
-    FIDELITY RULES
+    # FIDELITY RULES
 
     - Do not invent important elements.
     - Use only details present in the conversation or analysis.
     - If a detail is missing, stay vague.
     - Prioritize atmosphere over literal precision.
 
-    OUTPUT RULES
+    # OUTPUT RULES
 
     Return only the final English image prompt.
     No explanation.
@@ -61,7 +61,7 @@ export const prompting = async (
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: MODEL,
+      model: MODEL.LLM,
       stream: false,
       think: false,
       messages: [

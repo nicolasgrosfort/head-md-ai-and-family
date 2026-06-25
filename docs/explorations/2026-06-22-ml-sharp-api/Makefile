@@ -54,7 +54,7 @@ init-ml-sharp:
 start-ml-sharp:
 	cd ml-sharp && conda run -n sharp uvicorn api:app --host 0.0.0.0 --port 8000
 
-WHISPER_MODEL ?= large-v3
+WHISPER_MODEL ?= medium
 WHISPER_PORT  ?= 8001
 WHISPER_LANG ?= fr
 WHISPER_COMPUTE ?= int8
